@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DealKoka vergleicht Preise und Angebote verschiedener Online-Shops und hilft dir, attraktive Deals zu finden.">
+  <title>DealKoka – Preise vergleichen. Besser kaufen.</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+      line-height: 1.6;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e6e9ef;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav {
+      max-width: 1180px;
+      margin: auto;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      color: #172033;
+    }
+
+    .logo span {
+      color: #ff6b35;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #4b5563;
+      margin-left: 25px;
+      font-weight: 600;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #172033, #273a63);
+      color: white;
+      padding: 90px 24px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 6vw, 66px);
+      line-height: 1.1;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .hero h1 span {
+      color: #ff8a55;
+    }
+
+    .hero p {
+      max-width: 700px;
+      margin: 22px auto 35px;
+      font-size: 19px;
+      color: #dce4f2;
+    }
+
+    .search {
+      max-width: 720px;
+      margin: auto;
+      background: white;
+      padding: 8px;
+      border-radius: 14px;
+      display: flex;
+      box-shadow: 0 15px 35px rgba(0,0,0,.18);
+    }
+
+    .search input {
+      flex: 1;
+      border: 0;
+      outline: 0;
+      padding: 16px;
+      font-size: 16px;
+      border-radius: 10px;
+    }
+
+    .search button {
+      border: 0;
+      background: #ff6b35;
+      color: white;
+      padding: 0 25px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .section {
+      max-width: 1180px;
+      margin: auto;
+      padding: 70px 24px;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .section-title h2 {
+      font-size: 34px;
+      margin-bottom: 8px;
+    }
+
+    .section-title p {
+      color: #667085;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #e8ebf0;
+      border-radius: 18px;
+      padding: 26px;
+      box-shadow: 0 8px 25px rgba(20,30,50,.05);
+    }
+
+    .badge {
+      display: inline-block;
+      background: #eaf8ef;
+      color: #168447;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 21px;
+    }
+
+    .old-price {
+      color: #8a94a6;
+      text-decoration: line-through;
+      margin-top: 15px;
+    }
+
+    .price {
+      font-size: 30px;
+      font-weight: 800;
+      margin: 2px 0;
+    }
+
+    .saving {
+      color: #168447;
+      font-weight: 700;
+    }
+
+    .deal-button {
+      display: block;
+      text-decoration: none;
+      text-align: center;
+      background: #ff6b35;
+      color: white;
+      margin-top: 20px;
+      padding: 13px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .how {
+      background: white;
+    }
+
+    .steps {
+      max-width: 950px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 35px;
+      text-align: center;
+    }
+
+    .step-number {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 15px;
+      border-radius: 50%;
+      background: #ff6b35;
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    footer {
+      background: #172033;
+      color: #aeb8ca;
+      padding: 35px 24px;
+      text-align: center;
+    }
+
+    footer strong {
+      color: white;
+    }
+
+    .notice {
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 800px) {
+      nav {
+        display: none;
+      }
+
+      .cards,
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 65px 20px;
+      }
+
+      .search {
+        flex-direction: column;
+      }
+
+      .search button {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">Deal<span>Koka</span></div>
+    <nav>
+      <a href="#angebote">Angebote</a>
+      <a href="#so-funktionierts">So funktioniert's</a>
+      <a href="#ueber-uns">Über DealKoka</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Gute Preise finden.<br><span>Besser entscheiden.</span></h1>
+
+  <p>
+    DealKoka vergleicht Produktpreise verschiedener Online-Shops
+    und hilft dir, interessante Angebote schneller zu entdecken.
+  </p>
+
+  <div class="search">
+    <input type="text" placeholder="Produkt suchen, z. B. Fernseher, Laptop, Waschmaschine">
+    <button type="button">Deals finden</button>
+  </div>
+</section>
+
+<section class="section" id="angebote">
+
+  <div class="section-title">
+    <h2>Aktuelle Deal-Beispiele</h2>
+    <p>So werden Produktangebote und Preisvergleiche auf DealKoka dargestellt.</p>
+  </div>
+
+  <div class="cards">
+
+    <article class="card">
+      <span class="badge">Deal-Beispiel</span>
+      <h3>4K Smart TV</h3>
+      <p>Preisvergleich für ausgewählte Fernseher verschiedener Online-Händler.</p>
+      <div class="old-price">Vergleichspreis: 649 €</div>
+      <div class="price">479 €</div>
+      <div class="saving">Beispiel-Ersparnis: 26 %</div>
+      <a class="deal-button" href="#hinweis">Angebot ansehen</a>
+    </article>
+
+    <article class="card">
+      <span class="badge">Deal-Beispiel</span>
+      <h3>Waschmaschine</h3>
+      <p>Produkte vergleichen und attraktive Preise bei teilnehmenden Shops finden.</p>
+      <div class="old-price">Vergleichspreis: 599 €</div>
+      <div class="price">449 €</div>
+      <div class="saving">Beispiel-Ersparnis: 25 %</div>
+      <a class="deal-button" href="#hinweis">Angebot ansehen</a>
+    </article>
+
+    <article class="card">
+      <span class="badge">Deal-Beispiel</span>
+      <h3>Laptop</h3>
+      <p>Preise und Angebote übersichtlich vergleichen, bevor du dich entscheidest.</p>
+      <div class="old-price">Vergleichspreis: 799 €</div>
+      <div class="price">649 €</div>
+      <div class="saving">Beispiel-Ersparnis: 19 %</div>
+      <a class="deal-button" href="#hinweis">Angebot ansehen</a>
+    </article>
+
+  </div>
+</section>
+
+<section class="how" id="so-funktionierts">
+  <div class="section">
+
+    <div class="section-title">
+      <h2>So funktioniert DealKoka</h2>
+      <p>Einfach vergleichen und das passende Angebot finden.</p>
+    </div>
+
+    <div class="steps">
+      <div>
+        <div class="step-number">1</div>
+        <h3>Produkte finden</h3>
+        <p>DealKoka sammelt Produkt- und Angebotsinformationen teilnehmender Online-Händler.</p>
+      </div>
+
+      <div>
+        <div class="step-number">2</div>
+        <h3>Preise vergleichen</h3>
+        <p>Preise und relevante Produktinformationen werden übersichtlich gegenübergestellt.</p>
+      </div>
+
+      <div>
+        <div class="step-number">3</div>
+        <h3>Zum Händler</h3>
+        <p>Interessiert dich ein Angebot, gelangst du direkt zum jeweiligen Online-Shop.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section" id="ueber-uns">
+  <div class="section-title">
+    <h2>Über DealKoka</h2>
+    <p>
+      DealKoka ist eine unabhängige Vergleichs- und Deal-Plattform
+      für den deutschen Markt. Ziel ist es, Preisvergleiche einfacher,
+      transparenter und schneller zu machen.
+    </p>
+  </div>
+</section>
+
+<footer id="hinweis">
+  <strong>DealKoka</strong>
+  <div>Preise vergleichen. Besser kaufen.</div>
+
+  <div class="notice">
+    Hinweis: Die derzeit dargestellten Angebote und Preise dienen ausschließlich
+    als Beispiele für die geplante Plattform. DealKoka befindet sich im Aufbau.
+    Zukünftig können Affiliate-Links eingesetzt werden. Bei einem Kauf über
+    solche Links kann DealKoka eine Provision erhalten.
+  </div>
+</footer>
+
+</body>
+</html>
