@@ -3,252 +3,647 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="DealKoka vergleicht Preise und Angebote verschiedener Online-Shops und hilft dir, attraktive Deals zu finden.">
+  <meta name="description" content="DealKoka hilft dir, attraktive Angebote zu entdecken, Preise zu vergleichen und besser zu kaufen.">
   <title>DealKoka – Preise vergleichen. Besser kaufen.</title>
 
   <style>
+    :root {
+      --primary: #ff5a36;
+      --primary-dark: #e94724;
+      --dark: #172033;
+      --muted: #687386;
+      --light: #f6f7fb;
+      --white: #ffffff;
+      --green: #149b62;
+      --yellow: #ffb020;
+      --border: #e7eaf0;
+      --shadow: 0 12px 35px rgba(23, 32, 51, 0.08);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: #f5f7fb;
-      color: #172033;
-      line-height: 1.6;
+    html {
+      scroll-behavior: smooth;
     }
 
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      line-height: 1.5;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: auto;
+    }
+
+    /* HEADER */
+
     header {
-      background: #ffffff;
-      border-bottom: 1px solid #e6e9ef;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
     }
 
     .nav {
-      max-width: 1180px;
-      margin: auto;
-      padding: 18px 24px;
+      min-height: 72px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      gap: 24px;
     }
 
     .logo {
-      font-size: 28px;
-      font-weight: 800;
-      color: #172033;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.7px;
+    }
+
+    .logo-icon {
+      width: 39px;
+      height: 39px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ff7048, #ff3f20);
+      display: grid;
+      place-items: center;
+      color: white;
+      box-shadow: 0 8px 18px rgba(255, 90, 54, 0.25);
     }
 
     .logo span {
-      color: #ff6b35;
+      color: var(--primary);
     }
 
-    nav a {
-      text-decoration: none;
-      color: #4b5563;
-      margin-left: 25px;
-      font-weight: 600;
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      font-size: 14px;
+      font-weight: 650;
     }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .nav-button {
+      background: var(--dark);
+      color: white !important;
+      padding: 10px 17px;
+      border-radius: 10px;
+    }
+
+    /* HERO */
 
     .hero {
-      background: linear-gradient(135deg, #172033, #273a63);
-      color: white;
-      padding: 90px 24px;
+      padding: 74px 0 58px;
+      background:
+        radial-gradient(circle at 85% 15%, rgba(255, 90, 54, 0.13), transparent 26%),
+        radial-gradient(circle at 15% 80%, rgba(255, 176, 32, 0.10), transparent 30%),
+        linear-gradient(180deg, #fff 0%, #f6f7fb 100%);
+    }
+
+    .hero-inner {
+      max-width: 850px;
+      margin: auto;
       text-align: center;
     }
 
-    .hero h1 {
-      font-size: clamp(38px, 6vw, 66px);
-      line-height: 1.1;
-      max-width: 900px;
-      margin: auto;
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff1ed;
+      color: #c83e1e;
+      border: 1px solid #ffd7cc;
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 750;
+      margin-bottom: 20px;
     }
 
-    .hero h1 span {
-      color: #ff8a55;
+    h1 {
+      font-size: clamp(38px, 6vw, 67px);
+      line-height: 1.04;
+      letter-spacing: -2.3px;
+      margin-bottom: 20px;
     }
 
-    .hero p {
-      max-width: 700px;
-      margin: 22px auto 35px;
-      font-size: 19px;
-      color: #dce4f2;
+    h1 span {
+      color: var(--primary);
     }
 
-    .search {
-      max-width: 720px;
-      margin: auto;
+    .hero-text {
+      color: var(--muted);
+      font-size: 18px;
+      max-width: 680px;
+      margin: 0 auto 30px;
+    }
+
+    .search-box {
       background: white;
+      max-width: 760px;
+      margin: auto;
       padding: 8px;
-      border-radius: 14px;
       display: flex;
-      box-shadow: 0 15px 35px rgba(0,0,0,.18);
+      gap: 8px;
+      border-radius: 17px;
+      box-shadow: 0 18px 50px rgba(23, 32, 51, 0.12);
+      border: 1px solid var(--border);
     }
 
-    .search input {
+    .search-box input {
       flex: 1;
       border: 0;
       outline: 0;
-      padding: 16px;
-      font-size: 16px;
-      border-radius: 10px;
+      padding: 15px 17px;
+      min-width: 0;
+      color: var(--dark);
+      background: transparent;
     }
 
-    .search button {
+    .search-box button {
       border: 0;
-      background: #ff6b35;
+      background: var(--primary);
       color: white;
-      padding: 0 25px;
-      border-radius: 10px;
-      font-weight: 700;
+      padding: 0 24px;
+      border-radius: 12px;
       cursor: pointer;
+      font-weight: 750;
     }
 
-    .section {
-      max-width: 1180px;
-      margin: auto;
-      padding: 70px 24px;
+    .search-box button:hover {
+      background: var(--primary-dark);
     }
 
-    .section-title {
+    .trust-row {
+      margin-top: 23px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* CATEGORIES */
+
+    section {
+      padding: 65px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .section-head h2 {
+      font-size: 30px;
+      letter-spacing: -0.8px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
+    }
+
+    .category {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 10px;
       text-align: center;
-      margin-bottom: 40px;
+      cursor: pointer;
+      transition: 0.2s ease;
     }
 
-    .section-title h2 {
-      font-size: 34px;
+    .category:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: #ffd1c6;
+    }
+
+    .category-icon {
+      font-size: 30px;
       margin-bottom: 8px;
     }
 
-    .section-title p {
-      color: #667085;
+    .category-name {
+      font-size: 13px;
+      font-weight: 700;
     }
 
-    .cards {
+    /* DEALS */
+
+    .deals-section {
+      background: white;
+    }
+
+    .demo-label {
+      display: inline-block;
+      background: #fff7e8;
+      color: #996300;
+      border: 1px solid #ffe0a3;
+      padding: 7px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .deals {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 22px;
     }
 
-    .card {
+    .deal-card {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
       background: white;
-      border: 1px solid #e8ebf0;
-      border-radius: 18px;
-      padding: 26px;
-      box-shadow: 0 8px 25px rgba(20,30,50,.05);
+      transition: 0.22s ease;
+      position: relative;
+    }
+
+    .deal-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+    }
+
+    .product-image {
+      height: 210px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #f7f8fb, #eef1f6);
+      font-size: 72px;
+      position: relative;
     }
 
     .badge {
-      display: inline-block;
-      background: #eaf8ef;
-      color: #168447;
-      padding: 6px 10px;
-      border-radius: 20px;
-      font-size: 13px;
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: var(--primary);
+      color: white;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    .brand {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
       font-weight: 700;
-      margin-bottom: 18px;
     }
 
-    .card h3 {
-      margin-bottom: 10px;
-      font-size: 21px;
+    .product-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 5px 0 15px;
+      min-height: 54px;
     }
 
-    .old-price {
-      color: #8a94a6;
-      text-decoration: line-through;
-      margin-top: 15px;
+    .price-line {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 15px;
     }
 
     .price {
-      font-size: 30px;
-      font-weight: 800;
-      margin: 2px 0;
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .old-price {
+      color: #9aa1ad;
+      text-decoration: line-through;
+      font-size: 14px;
+    }
+
+    .deal-info {
+      background: #f7f8fa;
+      border-radius: 13px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .score strong {
+      color: var(--green);
+      font-size: 18px;
     }
 
     .saving {
-      color: #168447;
-      font-weight: 700;
-    }
-
-    .deal-button {
-      display: block;
-      text-decoration: none;
-      text-align: center;
-      background: #ff6b35;
-      color: white;
-      margin-top: 20px;
-      padding: 13px;
-      border-radius: 10px;
-      font-weight: 700;
-    }
-
-    .how {
-      background: white;
-    }
-
-    .steps {
-      max-width: 950px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 35px;
-      text-align: center;
-    }
-
-    .step-number {
-      width: 52px;
-      height: 52px;
-      margin: 0 auto 15px;
-      border-radius: 50%;
-      background: #ff6b35;
-      color: white;
-      display: grid;
-      place-items: center;
-      font-size: 21px;
+      text-align: right;
+      color: var(--green);
       font-weight: 800;
     }
 
-    footer {
-      background: #172033;
-      color: #aeb8ca;
-      padding: 35px 24px;
-      text-align: center;
+    .small {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
     }
 
-    footer strong {
+    .offer-button {
+      display: block;
+      text-align: center;
+      width: 100%;
+      border: 0;
+      background: var(--dark);
+      color: white;
+      padding: 13px;
+      border-radius: 11px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .offer-button:hover {
+      background: var(--primary);
+    }
+
+    /* HOW IT WORKS */
+
+    .how {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .step {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 28px;
+      border-radius: 18px;
+    }
+
+    .step-number {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #fff0ec;
+      color: var(--primary);
+      font-weight: 900;
+      margin-bottom: 15px;
+    }
+
+    .step h3 {
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* DEAL SCORE */
+
+    .score-section {
+      background: var(--dark);
       color: white;
     }
 
-    .notice {
-      margin-top: 12px;
-      font-size: 13px;
+    .score-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      align-items: center;
     }
 
-    @media (max-width: 800px) {
-      nav {
+    .score-wrap h2 {
+      font-size: 38px;
+      line-height: 1.15;
+      margin-bottom: 17px;
+    }
+
+    .score-wrap p {
+      color: #c6ccd7;
+    }
+
+    .score-example {
+      background: white;
+      color: var(--dark);
+      border-radius: 22px;
+      padding: 28px;
+    }
+
+    .big-score {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .score-circle {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 8px solid #20a96b;
+      display: grid;
+      place-items: center;
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .score-bars {
+      display: grid;
+      gap: 12px;
+    }
+
+    .score-bar {
+      display: grid;
+      grid-template-columns: 130px 1fr 38px;
+      gap: 10px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 10px;
+      background: #e9edf2;
+      overflow: hidden;
+    }
+
+    .bar > div {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    /* NOTICE */
+
+    .notice {
+      background: #fff8e8;
+      border: 1px solid #ffe0a1;
+      padding: 18px;
+      border-radius: 14px;
+      color: #775311;
+      font-size: 13px;
+      margin-top: 30px;
+    }
+
+    /* FOOTER */
+
+    footer {
+      background: #101725;
+      color: white;
+      padding: 45px 0 25px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 40px;
+    }
+
+    footer p {
+      color: #aeb6c4;
+      font-size: 13px;
+      margin-top: 12px;
+      max-width: 420px;
+    }
+
+    footer h4 {
+      margin-bottom: 12px;
+    }
+
+    footer a {
+      display: block;
+      color: #b9c0cb;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+
+    footer a:hover {
+      color: white;
+    }
+
+    .copyright {
+      border-top: 1px solid #283142;
+      margin-top: 35px;
+      padding-top: 20px;
+      color: #8892a2;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 900px) {
+      .categories {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .deals {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .score-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .nav {
+        min-height: 64px;
+      }
+
+      .nav-links a:not(.nav-button) {
         display: none;
       }
 
-      .cards,
-      .steps {
-        grid-template-columns: 1fr;
-      }
-
       .hero {
-        padding: 65px 20px;
+        padding-top: 50px;
       }
 
-      .search {
+      h1 {
+        letter-spacing: -1.5px;
+      }
+
+      .hero-text {
+        font-size: 16px;
+      }
+
+      .search-box {
         flex-direction: column;
       }
 
-      .search button {
-        padding: 15px;
+      .search-box button {
+        padding: 14px;
+      }
+
+      .categories {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .deals,
+      .how,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .product-image {
+        height: 180px;
+      }
+
+      .score-wrap h2 {
+        font-size: 30px;
+      }
+
+      .copyright {
+        flex-direction: column;
       }
     }
   </style>
@@ -257,125 +652,445 @@
 <body>
 
 <header>
-  <div class="nav">
-    <div class="logo">Deal<span>Koka</span></div>
-    <nav>
-      <a href="#angebote">Angebote</a>
-      <a href="#so-funktionierts">So funktioniert's</a>
-      <a href="#ueber-uns">Über DealKoka</a>
+  <div class="container nav">
+    <a class="logo" href="#">
+      <div class="logo-icon">K</div>
+      Deal<span>Koka</span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="#deals">Top Deals</a>
+      <a href="#categories">Kategorien</a>
+      <a href="#how">So funktioniert's</a>
+      <a href="#deals" class="nav-button">Deals entdecken</a>
     </nav>
   </div>
 </header>
 
-<section class="hero">
-  <h1>Gute Preise finden.<br><span>Besser entscheiden.</span></h1>
+<main>
 
-  <p>
-    DealKoka vergleicht Produktpreise verschiedener Online-Shops
-    und hilft dir, interessante Angebote schneller zu entdecken.
-  </p>
+  <section class="hero">
+    <div class="container hero-inner">
 
-  <div class="search">
-    <input type="text" placeholder="Produkt suchen, z. B. Fernseher, Laptop, Waschmaschine">
-    <button type="button">Deals finden</button>
-  </div>
-</section>
+      <div class="eyebrow">
+        🔥 Smarter suchen. Besser entscheiden.
+      </div>
 
-<section class="section" id="angebote">
+      <h1>
+        Finde den Preis,<br>
+        der sich <span>wirklich lohnt.</span>
+      </h1>
 
-  <div class="section-title">
-    <h2>Aktuelle Deal-Beispiele</h2>
-    <p>So werden Produktangebote und Preisvergleiche auf DealKoka dargestellt.</p>
-  </div>
+      <p class="hero-text">
+        DealKoka hilft dir, attraktive Angebote zu entdecken,
+        Preise besser einzuordnen und Produkte einfacher zu vergleichen.
+      </p>
 
-  <div class="cards">
+      <div class="search-box">
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Produkt suchen, z. B. Fernseher, Laptop, Kaffeemaschine..."
+          aria-label="Produkte suchen"
+        >
+        <button onclick="searchProducts()">Suchen</button>
+      </div>
 
-    <article class="card">
-      <span class="badge">Deal-Beispiel</span>
-      <h3>4K Smart TV</h3>
-      <p>Preisvergleich für ausgewählte Fernseher verschiedener Online-Händler.</p>
-      <div class="old-price">Vergleichspreis: 649 €</div>
-      <div class="price">479 €</div>
-      <div class="saving">Beispiel-Ersparnis: 26 %</div>
-      <a class="deal-button" href="#hinweis">Angebot ansehen</a>
-    </article>
+      <div class="trust-row">
+        <span>✓ Preisvergleich</span>
+        <span>✓ Deal-Bewertung</span>
+        <span>✓ Direkter Weg zum Händler</span>
+      </div>
 
-    <article class="card">
-      <span class="badge">Deal-Beispiel</span>
-      <h3>Waschmaschine</h3>
-      <p>Produkte vergleichen und attraktive Preise bei teilnehmenden Shops finden.</p>
-      <div class="old-price">Vergleichspreis: 599 €</div>
-      <div class="price">449 €</div>
-      <div class="saving">Beispiel-Ersparnis: 25 %</div>
-      <a class="deal-button" href="#hinweis">Angebot ansehen</a>
-    </article>
+    </div>
+  </section>
 
-    <article class="card">
-      <span class="badge">Deal-Beispiel</span>
-      <h3>Laptop</h3>
-      <p>Preise und Angebote übersichtlich vergleichen, bevor du dich entscheidest.</p>
-      <div class="old-price">Vergleichspreis: 799 €</div>
-      <div class="price">649 €</div>
-      <div class="saving">Beispiel-Ersparnis: 19 %</div>
-      <a class="deal-button" href="#hinweis">Angebot ansehen</a>
-    </article>
+  <section id="categories">
+    <div class="container">
 
-  </div>
-</section>
+      <div class="section-head">
+        <div>
+          <h2>Was suchst du?</h2>
+          <p>Entdecke Angebote nach Kategorie.</p>
+        </div>
+      </div>
 
-<section class="how" id="so-funktionierts">
-  <div class="section">
+      <div class="categories">
 
-    <div class="section-title">
-      <h2>So funktioniert DealKoka</h2>
-      <p>Einfach vergleichen und das passende Angebot finden.</p>
+        <div class="category" onclick="filterCategory('Smartphone')">
+          <div class="category-icon">📱</div>
+          <div class="category-name">Smartphones</div>
+        </div>
+
+        <div class="category" onclick="filterCategory('Laptop')">
+          <div class="category-icon">💻</div>
+          <div class="category-name">Laptops</div>
+        </div>
+
+        <div class="category" onclick="filterCategory('TV')">
+          <div class="category-icon">📺</div>
+          <div class="category-name">Fernseher</div>
+        </div>
+
+        <div class="category" onclick="filterCategory('Haushalt')">
+          <div class="category-icon">🏠</div>
+          <div class="category-name">Haushalt</div>
+        </div>
+
+        <div class="category" onclick="filterCategory('Kaffee')">
+          <div class="category-icon">☕</div>
+          <div class="category-name">Kaffee</div>
+        </div>
+
+        <div class="category" onclick="filterCategory('Staubsauger')">
+          <div class="category-icon">🧹</div>
+          <div class="category-name">Staubsauger</div>
+        </div>
+
+        <div class="category" onclick="filterCategory('Werkzeug')">
+          <div class="category-icon">🛠️</div>
+          <div class="category-name">Werkzeuge</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="deals-section" id="deals">
+    <div class="container">
+
+      <div class="section-head">
+        <div>
+          <h2>Top Deals</h2>
+          <p>Beispielansicht für die spätere automatische Produktauswahl.</p>
+        </div>
+
+        <span class="demo-label">DEMO-DATEN</span>
+      </div>
+
+      <div class="deals" id="dealGrid">
+
+        <article class="deal-card" data-search="tv fernseher samsung">
+          <div class="product-image">
+            📺
+            <span class="badge">Demo</span>
+          </div>
+
+          <div class="card-content">
+            <div class="brand">Beispielprodukt</div>
+            <div class="product-title">Smart TV – Beispielangebot</div>
+
+            <div class="price-line">
+              <div class="price">499 €</div>
+              <div class="old-price">649 €</div>
+            </div>
+
+            <div class="deal-info">
+              <div class="score">
+                <span class="small">KokaScore</span>
+                <strong>92/100</strong>
+              </div>
+
+              <div class="saving">
+                -23%
+                <span class="small">Beispiel</span>
+              </div>
+            </div>
+
+            <button class="offer-button" onclick="demoNotice()">
+              Zum Angebot →
+            </button>
+          </div>
+        </article>
+
+        <article class="deal-card" data-search="kaffee kaffeemaschine ninja">
+          <div class="product-image">
+            ☕
+            <span class="badge">Demo</span>
+          </div>
+
+          <div class="card-content">
+            <div class="brand">Beispielprodukt</div>
+            <div class="product-title">Kaffeemaschine – Beispielangebot</div>
+
+            <div class="price-line">
+              <div class="price">129 €</div>
+              <div class="old-price">179 €</div>
+            </div>
+
+            <div class="deal-info">
+              <div class="score">
+                <span class="small">KokaScore</span>
+                <strong>88/100</strong>
+              </div>
+
+              <div class="saving">
+                -28%
+                <span class="small">Beispiel</span>
+              </div>
+            </div>
+
+            <button class="offer-button" onclick="demoNotice()">
+              Zum Angebot →
+            </button>
+          </div>
+        </article>
+
+        <article class="deal-card" data-search="staubsauger haushalt shark">
+          <div class="product-image">
+            🧹
+            <span class="badge">Demo</span>
+          </div>
+
+          <div class="card-content">
+            <div class="brand">Beispielprodukt</div>
+            <div class="product-title">Staubsauger – Beispielangebot</div>
+
+            <div class="price-line">
+              <div class="price">199 €</div>
+              <div class="old-price">279 €</div>
+            </div>
+
+            <div class="deal-info">
+              <div class="score">
+                <span class="small">KokaScore</span>
+                <strong>90/100</strong>
+              </div>
+
+              <div class="saving">
+                -29%
+                <span class="small">Beispiel</span>
+              </div>
+            </div>
+
+            <button class="offer-button" onclick="demoNotice()">
+              Zum Angebot →
+            </button>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="notice">
+        <strong>Hinweis:</strong>
+        Die aktuell angezeigten Produkte und Preise sind ausschließlich Demo-Daten.
+        Es werden noch keine Live-Preise oder Händlerangebote dargestellt.
+        Nach der Anbindung unserer Partner-Produktfeeds werden die Inhalte
+        automatisch durch reale Angebote ersetzt.
+      </div>
+
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="container">
+
+      <div class="section-head">
+        <div>
+          <h2>So funktioniert DealKoka</h2>
+          <p>Von vielen Angeboten zur besseren Kaufentscheidung.</p>
+        </div>
+      </div>
+
+      <div class="how">
+
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Produkt finden</h3>
+          <p>
+            Suche nach einem Produkt oder entdecke interessante Angebote
+            aus unseren Kategorien.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Deal bewerten</h3>
+          <p>
+            DealKoka soll Preise, Rabatte und weitere verfügbare Signale
+            analysieren und daraus einen verständlichen KokaScore bilden.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Beim Händler kaufen</h3>
+          <p>
+            Gefällt dir ein Angebot, gelangst du direkt zum jeweiligen Händler.
+            DealKoka selbst verkauft oder versendet keine Produkte.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="score-section">
+    <div class="container score-wrap">
+
+      <div>
+        <div class="eyebrow">KOKASCORE</div>
+
+        <h2>
+          Nicht jeder Rabatt ist automatisch ein guter Deal.
+        </h2>
+
+        <p>
+          Unser Ziel ist ein verständlicher Deal-Score, der mehrere Faktoren
+          berücksichtigt. Später können dazu unter anderem Preisentwicklung,
+          Vergleichspreise, Rabattstärke und Verfügbarkeit gehören.
+        </p>
+      </div>
+
+      <div class="score-example">
+
+        <div class="big-score">
+          <div class="score-circle">92</div>
+
+          <div>
+            <strong>Starker Deal</strong>
+            <span class="small">
+              Beispiel für die spätere KokaScore-Darstellung
+            </span>
+          </div>
+        </div>
+
+        <div class="score-bars">
+
+          <div class="score-bar">
+            <span>Preisniveau</span>
+            <div class="bar"><div style="width:95%"></div></div>
+            <strong>95</strong>
+          </div>
+
+          <div class="score-bar">
+            <span>Ersparnis</span>
+            <div class="bar"><div style="width:90%"></div></div>
+            <strong>90</strong>
+          </div>
+
+          <div class="score-bar">
+            <span>Vergleich</span>
+            <div class="bar"><div style="width:91%"></div></div>
+            <strong>91</strong>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+
+    <div class="footer-grid">
+
+      <div>
+        <div class="logo">
+          <div class="logo-icon">K</div>
+          Deal<span>Koka</span>
+        </div>
+
+        <p>
+          DealKoka ist eine unabhängige Deal- und Preisvergleichsplattform
+          im Aufbau. Wir möchten Nutzern helfen, Angebote besser einzuordnen
+          und einfacher zum passenden Händler zu gelangen.
+        </p>
+      </div>
+
+      <div>
+        <h4>DealKoka</h4>
+        <a href="#deals">Top Deals</a>
+        <a href="#categories">Kategorien</a>
+        <a href="#how">So funktioniert's</a>
+      </div>
+
+      <div>
+        <h4>Rechtliches</h4>
+        <a href="#" onclick="legalNotice('Impressum')">Impressum</a>
+        <a href="#" onclick="legalNotice('Datenschutz')">Datenschutz</a>
+        <a href="#" onclick="legalNotice('Affiliate-Hinweis')">Affiliate-Hinweis</a>
+      </div>
+
     </div>
 
-    <div class="steps">
-      <div>
-        <div class="step-number">1</div>
-        <h3>Produkte finden</h3>
-        <p>DealKoka sammelt Produkt- und Angebotsinformationen teilnehmender Online-Händler.</p>
-      </div>
-
-      <div>
-        <div class="step-number">2</div>
-        <h3>Preise vergleichen</h3>
-        <p>Preise und relevante Produktinformationen werden übersichtlich gegenübergestellt.</p>
-      </div>
-
-      <div>
-        <div class="step-number">3</div>
-        <h3>Zum Händler</h3>
-        <p>Interessiert dich ein Angebot, gelangst du direkt zum jeweiligen Online-Shop.</p>
-      </div>
+    <div class="copyright">
+      <span>© 2026 DealKoka. Alle Rechte vorbehalten.</span>
+      <span>Preise vergleichen. Besser kaufen.</span>
     </div>
 
-  </div>
-</section>
-
-<section class="section" id="ueber-uns">
-  <div class="section-title">
-    <h2>Über DealKoka</h2>
-    <p>
-      DealKoka ist eine unabhängige Vergleichs- und Deal-Plattform
-      für den deutschen Markt. Ziel ist es, Preisvergleiche einfacher,
-      transparenter und schneller zu machen.
-    </p>
-  </div>
-</section>
-
-<footer id="hinweis">
-  <strong>DealKoka</strong>
-  <div>Preise vergleichen. Besser kaufen.</div>
-
-  <div class="notice">
-    Hinweis: Die derzeit dargestellten Angebote und Preise dienen ausschließlich
-    als Beispiele für die geplante Plattform. DealKoka befindet sich im Aufbau.
-    Zukünftig können Affiliate-Links eingesetzt werden. Bei einem Kauf über
-    solche Links kann DealKoka eine Provision erhalten.
   </div>
 </footer>
+
+<script>
+  function searchProducts() {
+    const input = document.getElementById("searchInput");
+    const query = input.value.trim().toLowerCase();
+    const cards = document.querySelectorAll(".deal-card");
+
+    if (!query) {
+      cards.forEach(card => card.style.display = "block");
+      document.getElementById("deals").scrollIntoView();
+      return;
+    }
+
+    let found = 0;
+
+    cards.forEach(card => {
+      const searchable = card.dataset.search.toLowerCase();
+
+      if (searchable.includes(query)) {
+        card.style.display = "block";
+        found++;
+      } else {
+        card.style.display = "none";
+      }
+    });
+
+    document.getElementById("deals").scrollIntoView();
+
+    if (found === 0) {
+      setTimeout(() => {
+        alert(
+          "Für diese Suche gibt es in der Demo noch kein Produkt. " +
+          "Später durchsucht DealKoka automatisch die angebundenen Produktfeeds."
+        );
+        cards.forEach(card => card.style.display = "block");
+      }, 250);
+    }
+  }
+
+  function filterCategory(category) {
+    document.getElementById("searchInput").value = category;
+    searchProducts();
+  }
+
+  function demoNotice() {
+    alert(
+      "Demo-Angebot: Dieser Button wird später über einen gekennzeichneten " +
+      "Affiliate-Link direkt zum Händler führen."
+    );
+  }
+
+  function legalNotice(page) {
+    event.preventDefault();
+    alert(
+      page +
+      " wird vor dem öffentlichen Affiliate-Start als eigene Seite eingerichtet."
+    );
+  }
+
+  document
+    .getElementById("searchInput")
+    .addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        searchProducts();
+      }
+    });
+</script>
 
 </body>
 </html>
