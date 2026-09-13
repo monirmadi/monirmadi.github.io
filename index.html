@@ -234,7 +234,7 @@
 
     .categories {
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 12px;
     }
 
@@ -408,7 +408,7 @@
 
     .how {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 20px;
     }
 
@@ -646,6 +646,173 @@
         flex-direction: column;
       }
     }
+
+    /* Extensions keep the existing DealKoka design system. */
+    [hidden] { display: none !important; }
+    select, button { font: inherit; }
+    button, select, input { min-height: 44px; }
+    :focus-visible { outline: 3px solid #bc391b; outline-offset: 4px; }
+    .search-box:focus-within { outline: 2px solid var(--primary); }
+    section[id] { scroll-margin-top: 90px; }
+    .search-help { margin: 15px auto 0; max-width: 700px; font-size: 13px; color: var(--muted); }
+    .category { color: var(--dark); }
+    .category[aria-pressed="true"] { border-color: var(--primary); background: #fff1ed; }
+    .category-icon, .category-name { display: block; }
+    .phase-notice { margin: 0 0 24px; }
+    .notice p + p { margin-top: 8px; }
+    .filter-panel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 20px; background: var(--light); border: 1px solid var(--border); border-radius: 16px; }
+    .filter-panel label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; min-width: 0; }
+    .filter-panel select { width: 100%; min-width: 0; padding: 10px; background: white; color: var(--dark); border: 1px solid #cbd1db; border-radius: 9px; }
+    .filter-panel select:disabled { color: var(--muted); cursor: not-allowed; }
+    .reset-button { border: 1px solid #cbd1db; border-radius: 9px; background: white; color: var(--dark); cursor: pointer; }
+    .filter-help { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+    .result-count { margin: 20px 0; font-size: 14px; color: var(--muted); }
+    .card-content { display: flex; flex-direction: column; flex: 1; }
+    .deal-card { display: flex; flex-direction: column; min-width: 0; }
+    .product-image img { width: 100%; height: 100%; object-fit: contain; padding: 24px; }
+    .product-title { overflow-wrap: anywhere; }
+    .merchant, .offer-count { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+    .price-line { flex-wrap: wrap; }
+    .price-line .small { flex-basis: 100%; }
+    .old-price { color: var(--muted); }
+    .offer-button { margin-top: auto; }
+    .score-circle { flex-shrink: 0; }
+    .score-example > .demo-label { margin-bottom: 20px; }
+    .transparency-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    @media (max-width: 900px) { .how { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 650px) {
+      .filter-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 14px; }
+      .how, .transparency-grid { grid-template-columns: 1fr; }
+      .score-bar { grid-template-columns: 90px minmax(0, 1fr) 25px; gap: 8px; }
+      .score-example { padding: 20px; }
+      .nav { gap: 10px; }
+      .nav-button { padding: 10px; font-size: 12px; }
+      .big-score { gap: 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .category, .deal-card { transition: none; }
+      .category:hover, .deal-card:hover { transform: none; }
+    }
+
+    /* Final UX layer: compact catalog, accessible navigation and feedback. */
+    .nav { position: relative; min-height: 80px; }
+    header { box-shadow: 0 4px 24px rgba(23,32,51,.04); }
+    .nav-links { gap: 22px; }
+    .menu-toggle { display: none; }
+    .hero { padding: 60px 0 42px; }
+    .search-box { border: 2px solid #ffb39f; padding: 7px; border-radius: 18px; position: relative; }
+    .search-box input { font-size: 17px; }
+    .search-box .clear-search { background: #f1f3f7; color: var(--dark); padding: 0 14px; font-size: 24px; }
+    .categories { grid-template-columns: repeat(9,minmax(0,1fr)); }
+    .category { padding: 17px 5px; }
+    .category-icon { color: #49546a; margin: 0 auto 10px; }
+    .category-icon svg { width: 29px; height: 29px; display: block; margin: auto; }
+    .category[aria-pressed="true"] .category-icon { color: #bd391b; }
+    .category-name { font-size: 13px; }
+    .phase-notice { background: #f5f7fa; border-color: #e1e6ee; border-left: 3px solid var(--primary); color: #49546a; padding: 14px 18px; }
+    .phase-notice strong { color: var(--dark); }
+    .deal-toolbar { display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-bottom:12px; }
+    .sort-label { display:flex; align-items:center; gap:10px; font-size:14px; }
+    .sort-label select { min-width:0; padding:10px; border:1px solid #cbd1db; border-radius:10px; background:white; color:var(--dark); }
+    #filterToggle, #closeFilters { display:none; }
+    .filter-panel { grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; padding:14px; }
+    .filter-help { font-size:13px; }
+    .active-filters { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .active-filters:empty { display:none; }
+    .filter-chip, .reset-all { border:1px solid #ffd1c6; background:#fff4f0; color:#a4341b; border-radius:24px; padding:8px 13px; font-size:14px; cursor:pointer; overflow-wrap:anywhere; max-width:100%; }
+    .reset-all { background:white; border-color:#cbd1db; color:var(--dark); }
+    .product-image { height:180px; background:radial-gradient(ellipse at center,#fff,#f1f4f8); color:#65748a; }
+    .product-image > svg { width:76px; height:76px; }
+    .badge { background:white; color:#6b4a16; border:1px solid #e7dcc7; padding:4px 9px; font-weight:650; }
+    .product-title { min-height:0; margin-bottom:10px; }
+    .brand, .small { font-size:13px; }
+    .price-line { gap:5px 10px; }
+    .score strong { color:#087a4b; }
+    .saving { color:#087a4b; }
+    .offer-button { min-height:48px; }
+    .empty-state { text-align:center; padding:30px 20px; background:var(--light); border-radius:16px; }
+    .empty-state p { margin:10px auto 18px; max-width:500px; color:var(--muted); }
+    .empty-state button { padding:10px 18px; }
+    .how .step { padding:20px; }
+    .how .step-number { width:32px; height:32px; margin-bottom:12px; }
+    .score-circle { width:70px; height:70px; border-width:5px; }
+    .score-factors { display:grid; gap:14px; }
+    .score-factors > div { border-top:1px solid var(--border); padding-top:12px; }
+    .score-factors dt { font-weight:750; font-size:15px; }
+    .score-factors dd { color:var(--muted); font-size:14px; margin-top:3px; }
+    .transparency-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .transparency-grid .step { padding:22px; }
+    .trust-symbol { display:inline-block; color:#b9381b; font-weight:750; margin-bottom:10px; }
+    footer { border-top:3px solid #ff5a36; }
+    footer a { min-height:44px; display:flex; align-items:center; margin:0; font-size:14px; }
+    footer p { font-size:14px; }
+    dialog { margin:auto; width:min(580px,calc(100% - 28px)); max-height:calc(100dvh - 28px); overflow:auto; padding:26px; border:1px solid var(--border); border-radius:22px; color:var(--dark); box-shadow:0 28px 90px #0003; }
+    dialog::backdrop { background:rgba(16,23,37,.6); backdrop-filter:blur(4px); }
+    .dialog-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .dialog-brand { font-weight:850; color:#b9381b; }
+    #dialogClose { width:44px; border:0; border-radius:50%; font-size:26px; cursor:pointer; background:var(--light); color:var(--dark); }
+    dialog h2 { font-size:24px; line-height:1.25; margin-bottom:14px; }
+    dialog p { font-size:15px; color:#536075; }
+    #dialogBody { margin-top:18px; }
+    .detail-summary { display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; padding:16px; background:var(--light); border-radius:12px; margin-bottom:18px; }
+    .history-placeholder { padding:18px; margin-top:18px; background:var(--light); border:1px dashed #cbd1db; border-radius:12px; }
+    .history-placeholder h3 { margin-bottom:8px; }
+    @media(max-width:1000px) { .categories { grid-template-columns:repeat(3,minmax(0,1fr)); } .nav-links { gap:12px; } .filter-panel { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+    @media(max-width:760px) {
+      .nav { min-height:68px; flex-wrap:wrap; }
+      .menu-toggle { display:block; border:1px solid #cbd1db; background:white; padding:8px 12px; border-radius:10px; color:var(--dark); }
+      .nav-links { display:none; flex-basis:100%; padding:0 0 14px; }
+      .nav-links.is-open { display:flex; flex-direction:column; align-items:stretch; gap:4px; }
+      .nav-links a, .nav-links a:not(.nav-button) { display:flex; min-height:44px; align-items:center; padding:8px 12px; }
+      .nav-links .nav-button { justify-content:center; font-size:14px; }
+      .transparency-grid { grid-template-columns:1fr; }
+    }
+    @media(max-width:650px) {
+      section { padding:32px 0; }
+      .hero { padding:34px 0 26px; }
+      h1 { font-size:38px; }
+      .hero-text { margin-bottom:22px; }
+      .search-box { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px; }
+      .search-box input { width:100%; padding:12px 8px; font-size:16px; }
+      .search-box button[type="submit"] { grid-column:1/-1; padding:12px; }
+      .search-box .clear-search { padding:0 12px; }
+      .trust-row { gap:8px 14px; margin-top:16px; }
+      .search-help { font-size:14px; }
+      .category { padding:12px 4px; border-radius:12px; }
+      .category-name { font-size:13px; }
+      .categories { gap:8px; }
+      .section-head { margin-bottom:18px; }
+      .section-head h2 { font-size:26px; }
+      .deal-toolbar { justify-content:space-between; align-items:end; }
+      #filterToggle { display:block; padding:10px 16px; }
+      .sort-label { display:grid; gap:4px; flex:1; max-width:190px; font-size:13px; }
+      .filter-panel { display:none; grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .filter-panel.is-open { display:grid; }
+      #closeFilters { display:block; grid-column:1/-1; }
+      .filter-help { font-size:14px; }
+      .product-image { height:130px; }
+      .product-image > svg { width:60px; height:60px; }
+      .card-content { padding:16px; }
+      .product-title { font-size:18px; }
+      .merchant, .offer-count, .small { font-size:14px; }
+      .how { gap:10px; }
+      .how .step { display:grid; grid-template-columns:32px minmax(0,1fr); gap:3px 12px; padding:14px; }
+      .how .step-number { grid-row:1/3; margin:0; }
+      .how .step h3 { font-size:16px; margin:0; }
+      .how .step p { grid-column:2; }
+      .score-wrap { gap:24px; }
+      .score-wrap h2 { font-size:28px; }
+      .score-example { padding:18px; }
+      .big-score { align-items:flex-start; }
+      .transparency-grid { gap:10px; }
+      .transparency-grid .step { padding:16px; }
+      .trust-symbol { float:left; margin:0 12px 0 0; }
+      .footer-grid { grid-template-columns:1fr 1fr; gap:22px; }
+      .footer-grid > div:first-child { grid-column:1/-1; }
+      .copyright { margin-top:22px; }
+      dialog { padding:18px; }
+    }
   </style>
 </head>
 
@@ -658,10 +825,12 @@
       Deal<span>Koka</span>
     </a>
 
-    <nav class="nav-links">
+    <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="mainNav">Menü <span aria-hidden="true">☰</span></button>
+    <nav class="nav-links" id="mainNav" aria-label="Hauptnavigation">
       <a href="#deals">Top Deals</a>
       <a href="#categories">Kategorien</a>
       <a href="#how">So funktioniert's</a>
+      <a href="#kokascore">KokaScore</a>
       <a href="#deals" class="nav-button">Deals entdecken</a>
     </nav>
   </div>
@@ -673,7 +842,7 @@
     <div class="container hero-inner">
 
       <div class="eyebrow">
-        🔥 Smarter suchen. Besser entscheiden.
+        Preise vergleichen. Möglichkeiten entdecken.
       </div>
 
       <h1>
@@ -686,15 +855,17 @@
         Preise besser einzuordnen und Produkte einfacher zu vergleichen.
       </p>
 
-      <div class="search-box">
+      <form class="search-box" id="searchForm" role="search">
         <input
           id="searchInput"
           type="search"
-          placeholder="Produkt suchen, z. B. Fernseher, Laptop, Kaffeemaschine..."
+          placeholder="Produkte suchen – z. B. Sneaker, Pflege, Möbel …" aria-describedby="searchHelp"
           aria-label="Produkte suchen"
         >
-        <button onclick="searchProducts()">Suchen</button>
-      </div>
+        <button type="button" id="clearSearch" class="clear-search" aria-label="Suche löschen" hidden>×</button>
+        <button type="submit">Suchen</button>
+      </form>
+      <p class="search-help" id="searchHelp">Elektronik, Mode, Haushalt und mehr. Aktuell mit Beispielprodukten entdecken.</p>
 
       <div class="trust-row">
         <span>✓ Preisvergleich</span>
@@ -715,44 +886,7 @@
         </div>
       </div>
 
-      <div class="categories">
-
-        <div class="category" onclick="filterCategory('Smartphone')">
-          <div class="category-icon">📱</div>
-          <div class="category-name">Smartphones</div>
-        </div>
-
-        <div class="category" onclick="filterCategory('Laptop')">
-          <div class="category-icon">💻</div>
-          <div class="category-name">Laptops</div>
-        </div>
-
-        <div class="category" onclick="filterCategory('TV')">
-          <div class="category-icon">📺</div>
-          <div class="category-name">Fernseher</div>
-        </div>
-
-        <div class="category" onclick="filterCategory('Haushalt')">
-          <div class="category-icon">🏠</div>
-          <div class="category-name">Haushalt</div>
-        </div>
-
-        <div class="category" onclick="filterCategory('Kaffee')">
-          <div class="category-icon">☕</div>
-          <div class="category-name">Kaffee</div>
-        </div>
-
-        <div class="category" onclick="filterCategory('Staubsauger')">
-          <div class="category-icon">🧹</div>
-          <div class="category-name">Staubsauger</div>
-        </div>
-
-        <div class="category" onclick="filterCategory('Werkzeug')">
-          <div class="category-icon">🛠️</div>
-          <div class="category-name">Werkzeuge</div>
-        </div>
-
-      </div>
+      <div class="categories" id="categoryGrid" aria-label="Produktkategorien"></div>
     </div>
   </section>
 
@@ -762,122 +896,34 @@
       <div class="section-head">
         <div>
           <h2>Top Deals</h2>
-          <p>Beispielansicht für die spätere automatische Produktauswahl.</p>
+          <p>Produkte entdecken. Preise einordnen. Bewusst entscheiden.</p>
         </div>
 
-        <span class="demo-label">DEMO-DATEN</span>
-      </div>
-
-      <div class="deals" id="dealGrid">
-
-        <article class="deal-card" data-search="tv fernseher samsung">
-          <div class="product-image">
-            📺
-            <span class="badge">Demo</span>
-          </div>
-
-          <div class="card-content">
-            <div class="brand">Beispielprodukt</div>
-            <div class="product-title">Smart TV – Beispielangebot</div>
-
-            <div class="price-line">
-              <div class="price">499 €</div>
-              <div class="old-price">649 €</div>
-            </div>
-
-            <div class="deal-info">
-              <div class="score">
-                <span class="small">KokaScore</span>
-                <strong>92/100</strong>
-              </div>
-
-              <div class="saving">
-                -23%
-                <span class="small">Beispiel</span>
-              </div>
-            </div>
-
-            <button class="offer-button" onclick="demoNotice()">
-              Zum Angebot →
-            </button>
-          </div>
-        </article>
-
-        <article class="deal-card" data-search="kaffee kaffeemaschine ninja">
-          <div class="product-image">
-            ☕
-            <span class="badge">Demo</span>
-          </div>
-
-          <div class="card-content">
-            <div class="brand">Beispielprodukt</div>
-            <div class="product-title">Kaffeemaschine – Beispielangebot</div>
-
-            <div class="price-line">
-              <div class="price">129 €</div>
-              <div class="old-price">179 €</div>
-            </div>
-
-            <div class="deal-info">
-              <div class="score">
-                <span class="small">KokaScore</span>
-                <strong>88/100</strong>
-              </div>
-
-              <div class="saving">
-                -28%
-                <span class="small">Beispiel</span>
-              </div>
-            </div>
-
-            <button class="offer-button" onclick="demoNotice()">
-              Zum Angebot →
-            </button>
-          </div>
-        </article>
-
-        <article class="deal-card" data-search="staubsauger haushalt shark">
-          <div class="product-image">
-            🧹
-            <span class="badge">Demo</span>
-          </div>
-
-          <div class="card-content">
-            <div class="brand">Beispielprodukt</div>
-            <div class="product-title">Staubsauger – Beispielangebot</div>
-
-            <div class="price-line">
-              <div class="price">199 €</div>
-              <div class="old-price">279 €</div>
-            </div>
-
-            <div class="deal-info">
-              <div class="score">
-                <span class="small">KokaScore</span>
-                <strong>90/100</strong>
-              </div>
-
-              <div class="saving">
-                -29%
-                <span class="small">Beispiel</span>
-              </div>
-            </div>
-
-            <button class="offer-button" onclick="demoNotice()">
-              Zum Angebot →
-            </button>
-          </div>
-        </article>
 
       </div>
 
-      <div class="notice">
-        <strong>Hinweis:</strong>
-        Die aktuell angezeigten Produkte und Preise sind ausschließlich Demo-Daten.
-        Es werden noch keine Live-Preise oder Händlerangebote dargestellt.
-        Nach der Anbindung unserer Partner-Produktfeeds werden die Inhalte
-        automatisch durch reale Angebote ersetzt.
+      <div class="notice phase-notice" id="demoInfo">
+        <strong>DealKoka wächst · Aufbauphase</strong>
+        <p>Alle Produkte, Preise und Bewertungen sind Demo-Beispiele und nicht kaufbar. Reale Angebote folgen nach Anbindung unserer Partner-Produktfeeds.</p>
       </div>
+      <div class="deal-toolbar">
+        <button id="filterToggle" type="button" class="reset-button" aria-expanded="false" aria-controls="filters">Filtern</button>
+        <label class="sort-label">Sortierung<select id="sortFilter"><option value="best">Bester Deal</option><option value="price">Niedrigster Preis</option></select></label>
+      </div>
+      <form id="filters" class="filter-panel" aria-label="Demo-Produkte filtern und sortieren">
+        <label>Kategorie<select id="categoryFilter"></select></label>
+        <label>Händler<select disabled aria-describedby="merchantHelp"><option>Noch keine Händler</option></select></label>
+        <label>Preis<select id="priceFilter"><option value="">Alle Preise</option><option value="150">Bis 150 €</option><option value="300">Bis 300 €</option><option value="500">Bis 500 €</option></select></label>
+        <label>Rabatt<select id="discountFilter"><option value="0">Alle Ersparnisse</option><option value="25">Ab 25 %</option></select></label>
+        <label>KokaScore<select id="scoreFilter"><option value="0">Alle Scores</option><option value="90">Ab 90 / 100</option></select></label>
+        <button type="button" id="closeFilters" class="reset-button">Ergebnisse anzeigen</button>
+        <p id="merchantHelp" class="filter-help">Händler folgen später. „Bester Deal“ sortiert nach dem Beispiel-KokaScore.</p>
+      </form>
+      <div class="active-filters" id="activeFilters" aria-label="Aktive Filter"></div>
+      <p id="resultCount" class="result-count" role="status" aria-live="polite"></p>
+      <div class="deals" id="dealGrid" aria-describedby="demoInfo"></div>
+      <div id="emptyState" class="empty-state" hidden><h3>Keine passenden Produkte</h3><p>Versuche einen anderen Suchbegriff oder entferne Filter. Viele Kategorien enthalten noch keine Beispielprodukte.</p><button type="button" id="emptyReset" class="reset-button">Alle zurücksetzen</button></div>
+      <noscript><p class="notice">Bitte aktiviere JavaScript, um Demo-Produkte, Kategorien und Filter zu verwenden.</p></noscript>
 
     </div>
   </section>
@@ -893,39 +939,15 @@
       </div>
 
       <div class="how">
-
-        <div class="step">
-          <div class="step-number">1</div>
-          <h3>Produkt finden</h3>
-          <p>
-            Suche nach einem Produkt oder entdecke interessante Angebote
-            aus unseren Kategorien.
-          </p>
-        </div>
-
-        <div class="step">
-          <div class="step-number">2</div>
-          <h3>Deal bewerten</h3>
-          <p>
-            DealKoka soll Preise, Rabatte und weitere verfügbare Signale
-            analysieren und daraus einen verständlichen KokaScore bilden.
-          </p>
-        </div>
-
-        <div class="step">
-          <div class="step-number">3</div>
-          <h3>Beim Händler kaufen</h3>
-          <p>
-            Gefällt dir ein Angebot, gelangst du direkt zum jeweiligen Händler.
-            DealKoka selbst verkauft oder versendet keine Produkte.
-          </p>
-        </div>
-
+        <div class="step"><div class="step-number">1</div><h3>Produkt finden</h3><p>Suche gezielt oder entdecke eine Kategorie.</p></div>
+        <div class="step"><div class="step-number">2</div><h3>Angebote vergleichen</h3><p>Preise und Händler künftig auf einen Blick.</p></div>
+        <div class="step"><div class="step-number">3</div><h3>Deal bewerten</h3><p>Mit dem KokaScore den Preis besser einordnen.</p></div>
+        <div class="step"><div class="step-number">4</div><h3>Beim Händler kaufen</h3><p>Der Kauf erfolgt direkt beim jeweiligen Händler.</p></div>
       </div>
     </div>
   </section>
 
-  <section class="score-section">
+  <section class="score-section" id="kokascore">
     <div class="container score-wrap">
 
       <div>
@@ -935,52 +957,37 @@
           Nicht jeder Rabatt ist automatisch ein guter Deal.
         </h2>
 
-        <p>
-          Unser Ziel ist ein verständlicher Deal-Score, der mehrere Faktoren
-          berücksichtigt. Später können dazu unter anderem Preisentwicklung,
-          Vergleichspreise, Rabattstärke und Verfügbarkeit gehören.
-        </p>
+        <p>Ein guter Preis braucht Kontext. Der KokaScore soll künftig vier Faktoren verständlich zusammenführen. Die Methode und Gewichtung sind noch in Entwicklung.</p>
+
       </div>
 
       <div class="score-example">
-
         <div class="big-score">
           <div class="score-circle">92</div>
-
-          <div>
-            <strong>Starker Deal</strong>
-            <span class="small">
-              Beispiel für die spätere KokaScore-Darstellung
-            </span>
-          </div>
+          <div><strong>KokaScore verstehen</strong><span class="small">Demo · 92 ist ein fiktiver Beispielwert, keine berechnete Bewertung.</span></div>
         </div>
-
-        <div class="score-bars">
-
-          <div class="score-bar">
-            <span>Preisniveau</span>
-            <div class="bar"><div style="width:95%"></div></div>
-            <strong>95</strong>
-          </div>
-
-          <div class="score-bar">
-            <span>Ersparnis</span>
-            <div class="bar"><div style="width:90%"></div></div>
-            <strong>90</strong>
-          </div>
-
-          <div class="score-bar">
-            <span>Vergleich</span>
-            <div class="bar"><div style="width:91%"></div></div>
-            <strong>91</strong>
-          </div>
-
-        </div>
+        <dl class="score-factors">
+          <div><dt>Preisniveau</dt><dd>Wie liegt der Preis im verfügbaren Preisverlauf?</dd></div>
+          <div><dt>Ersparnis</dt><dd>Wie groß ist der Abstand zum Vergleichspreis?</dd></div>
+          <div><dt>Vergleich</dt><dd>Wie schneidet das Angebot bei anderen Händlern ab?</dd></div>
+          <div><dt>Verfügbarkeit</dt><dd>Ist das Produkt beim Händler verfügbar?</dd></div>
+        </dl>
 
       </div>
     </div>
   </section>
 
+  <section id="transparency">
+    <div class="container">
+      <div class="section-head"><div><h2>Klar vergleichen. Transparent entscheiden.</h2><p>Dein Weg zum Angebot – mit klaren Rollen.</p></div></div>
+      <div class="transparency-grid">
+        <article class="step"><span class="trust-symbol" aria-hidden="true">01</span><h3>Wir vergleichen</h3><p>DealKoka verkauft und versendet keine Produkte.</p></article>
+        <article class="step"><span class="trust-symbol" aria-hidden="true">02</span><h3>Du kaufst beim Händler</h3><p>Bestellung, Lieferung und Rückgabe laufen direkt über den jeweiligen Händler.</p></article>
+        <article class="step"><span class="trust-symbol" aria-hidden="true">03</span><h3>Transparent finanziert</h3><p>Über gekennzeichnete Affiliate-Links kann DealKoka eine Provision erhalten. Dein Preis erhöht sich dadurch nicht.</p></article>
+      </div>
+
+    </div>
+  </section>
 </main>
 
 <footer>
@@ -995,9 +1002,7 @@
         </div>
 
         <p>
-          DealKoka ist eine unabhängige Deal- und Preisvergleichsplattform
-          im Aufbau. Wir möchten Nutzern helfen, Angebote besser einzuordnen
-          und einfacher zum passenden Händler zu gelangen.
+          Deine Plattform für Preisvergleiche und die Suche nach passenden Angeboten. Im Aufbau – mit klaren Informationen und transparenten Wegen zum Händler.
         </p>
       </div>
 
@@ -1006,13 +1011,14 @@
         <a href="#deals">Top Deals</a>
         <a href="#categories">Kategorien</a>
         <a href="#how">So funktioniert's</a>
+        <a href="#transparency">Transparenz</a>
       </div>
 
       <div>
         <h4>Rechtliches</h4>
-        <a href="#" onclick="legalNotice('Impressum')">Impressum</a>
-        <a href="#" onclick="legalNotice('Datenschutz')">Datenschutz</a>
-        <a href="#" onclick="legalNotice('Affiliate-Hinweis')">Affiliate-Hinweis</a>
+        <a href="#" onclick="legalNotice(event, 'Impressum')">Impressum</a>
+        <a href="#" onclick="legalNotice(event, 'Datenschutz')">Datenschutz</a>
+        <a href="#" onclick="legalNotice(event, 'Affiliate-Hinweis')">Affiliate-Hinweis</a>
       </div>
 
     </div>
@@ -1025,71 +1031,199 @@
   </div>
 </footer>
 
+<dialog id="infoDialog" aria-labelledby="dialogTitle" aria-describedby="dialogIntro">
+  <div class="dialog-head"><span class="dialog-brand">DealKoka</span><button id="dialogClose" type="button" aria-label="Dialog schließen">×</button></div>
+  <h2 id="dialogTitle"></h2>
+  <p id="dialogIntro"></p>
+  <div id="dialogBody"></div>
+</dialog>
+
 <script>
-  function searchProducts() {
-    const input = document.getElementById("searchInput");
-    const query = input.value.trim().toLowerCase();
-    const cards = document.querySelectorAll(".deal-card");
-
-    if (!query) {
-      cards.forEach(card => card.style.display = "block");
-      document.getElementById("deals").scrollIntoView();
-      return;
-    }
-
-    let found = 0;
-
-    cards.forEach(card => {
-      const searchable = card.dataset.search.toLowerCase();
-
-      if (searchable.includes(query)) {
-        card.style.display = "block";
-        found++;
-      } else {
-        card.style.display = "none";
-      }
-    });
-
-    document.getElementById("deals").scrollIntoView();
-
-    if (found === 0) {
-      setTimeout(() => {
-        alert(
-          "Für diese Suche gibt es in der Demo noch kein Produkt. " +
-          "Später durchsucht DealKoka automatisch die angebundenen Produktfeeds."
-        );
-        cards.forEach(card => card.style.display = "block");
-      }, 250);
-    }
+  // Catalog boundary: a future server-side Awin feed adapter can map into this
+  // normalized shape. No feed, credentials, tracking or network request is active.
+  // Nullable fields stay unknown; offerCount must come from real grouped offers.
+  // Trusted geometry only; feed strings are rendered with textContent.
+  const iconPaths = {"": "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z", "elektronik": "M3 4h18v13H3z M8 21h8 M12 17v4", "haushalt": "M3 11l9-8 9 8 M5 10v11h14V10 M9 21v-7h6v7", "mode": "M8 3l4 2 4-2 6 5-4 4-2-2v11H8V10l-2 2-4-4z", "beauty": "M8 8h8v13H8z M10 3h4v5 M9 3h6 M8 13h8", "sport": "M2 9v6 M5 6v12 M5 12h14 M19 6v12 M22 9v6", "garten": "M12 21V10 M12 15C3 15 3 8 3 8c9 0 9 7 9 7 M12 11s0-8 9-8c0 0 0 8-9 8", "auto": "M3 11l3-7h12l3 7v8H3z M3 11h18 M6 15h2 M16 15h2 M5 19v2 M19 19v2", "familie": "M8 6a4 4 0 1 0 8 0a4 4 0 1 0-8 0 M4 22v-5a8 8 0 0 1 16 0v5 M9 17l3 3 3-3", "coffee": "M4 4h12v12a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z M16 7h2a3 3 0 0 1 0 6h-2 M2 23h18", "vacuum": "M6 21h12l-2-5H8z M12 16V6a3 3 0 0 1 6 0v7"};
+  function iconFor(name) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    for (const [key, value] of Object.entries({viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", "stroke-width":"1.6", "stroke-linecap":"round", "stroke-linejoin":"round", "aria-hidden":"true"})) svg.setAttribute(key,value);
+    const path = document.createElementNS(svg.namespaceURI,"path"); path.setAttribute("d",iconPaths[name] || iconPaths[""]); svg.append(path); return svg;
   }
-
+  const categories = [
+    { id: '', name: 'Alle Kategorien' },
+    { id: 'elektronik', name: 'Elektronik' },
+    { id: 'haushalt', name: 'Haushalt & Küche' },
+    { id: 'mode', name: 'Mode & Schuhe' },
+    { id: 'beauty', name: 'Beauty & Pflege' },
+    { id: 'sport', name: 'Sport & Fitness' },
+    { id: 'garten', name: 'Garten & Werkzeug' },
+    { id: 'auto', name: 'Auto & Zubehör' },
+    { id: 'familie', name: 'Baby & Familie' }
+  ];
+  const products = [
+    { id: 'demo-tv', name: 'Smart TV – Beispielangebot', categoryId: 'elektronik', icon: 'elektronik', price: 499, comparisonPrice: 649, kokaScore: 92, keywords: ['TV', 'Fernseher'] },
+    { id: 'demo-kaffee', name: 'Kaffeemaschine – Beispielangebot', categoryId: 'haushalt', icon: 'coffee', price: 129, comparisonPrice: 179, kokaScore: 88, keywords: ['Kaffee', 'Küche'] },
+    { id: 'demo-staubsauger', name: 'Staubsauger – Beispielangebot', categoryId: 'haushalt', icon: 'vacuum', price: 199, comparisonPrice: 279, kokaScore: 90, keywords: ['Reinigung', 'Haushalt'] }
+  ].map(product => ({ ...product, currency: 'EUR', isDemo: true, brand: null,
+    merchant: null, imageUrl: null, offerCount: null, offerUrl: null, priceHistory: null, priceInsights: [], scoreFactors: null }));
+  const byId = id => document.getElementById(id);
+  const normalize = value => String(value).toLocaleLowerCase('de-DE').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss');
+  const money = (value, currency) => new Intl.NumberFormat('de-DE', { style: 'currency', currency }).format(value);
+  const savings = product => Number.isFinite(product.comparisonPrice) && product.comparisonPrice > product.price
+    ? Math.round((1 - product.price / product.comparisonPrice) * 100) : null;
+  // Use DOM text nodes so future feed strings cannot inject markup.
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+  function safeImageUrl(value) {
+    try { const url = new URL(value); return url.protocol === 'https:' ? url.href : null; } catch { return null; }
+  }
+  function renderCard(product) {
+    const card = element('article', 'deal-card');
+    card.dataset.productId = product.id;
+    const visual = element('div', 'product-image');
+    const imageUrl = product.imageUrl && safeImageUrl(product.imageUrl);
+    if (imageUrl) {
+      const img = element('img'); img.src = imageUrl; img.alt = product.name; img.loading = 'lazy';
+      img.addEventListener('error', () => img.replaceWith(iconFor(product.icon)), { once: true });
+      visual.append(img);
+    } else { visual.append(iconFor(product.icon)); }
+    if (product.isDemo) visual.append(element('span', 'badge', 'Demo'));
+    const body = element('div', 'card-content');
+    body.append(element('div', 'brand', product.brand || 'Marke noch offen'));
+    body.append(element('h3', 'product-title', product.name));
+    body.append(element('p', 'merchant', product.merchant ? `Händler: ${product.merchant}` : 'Händler: noch nicht angebunden'));
+    const price = element('div', 'price-line');
+    price.append(element('span', 'small', 'Preis'));
+    price.append(element('span', 'price', money(product.price, product.currency)));
+    if (Number.isFinite(product.comparisonPrice)) {
+      price.append(element('span', 'old-price', money(product.comparisonPrice, product.currency)));
+      price.append(element('span', 'small', 'Vergleichspreis'));
+    }
+    body.append(price);
+    const info = element('div', 'deal-info');
+    const score = element('div', 'score');
+    score.append(element('span', 'small', 'KokaScore'));
+    score.append(element('strong', '', Number.isFinite(product.kokaScore) ? `${product.kokaScore}/100` : 'Noch nicht verfügbar'));
+    const saving = element('div', 'saving');
+    saving.append(element('span', '', savings(product) === null ? '–' : `−${savings(product)} %`));
+    saving.append(element('span', 'small', 'Ersparnis'));
+    info.append(score, saving); body.append(info);
+    body.append(element('p', 'offer-count', product.offerCount === null ? 'Keine realen Angebote verfügbar' : `${product.offerCount} ${product.offerCount === 1 ? 'Angebot' : 'Angebote'}${product.isDemo ? ' · DEMO' : ''}`));
+    const button = element('button', 'offer-button', product.isDemo ? 'Demo-Vergleich ansehen' : 'Angebote vergleichen');
+    button.type = 'button'; button.addEventListener('click', () => demoNotice(product));
+    body.append(button); card.append(visual, body); return card;
+  }
+  // Filtering operates on catalog data, not rendered cards. A future paginated
+  // catalog service can implement this boundary without changing the card layout.
+  function selectProducts() {
+    const terms = normalize(byId('searchInput').value.trim()).split(/\s+/).filter(Boolean);
+    const category = byId('categoryFilter').value;
+    const maxPrice = byId('priceFilter').value;
+    return products.filter(product => {
+      const categoryName = categories.find(item => item.id === product.categoryId)?.name || '';
+      const text = normalize([product.name, product.brand || '', categoryName, ...product.keywords].join(' '));
+      return terms.every(term => text.includes(term)) && (!category || product.categoryId === category)
+        && (!maxPrice || product.price <= Number(maxPrice))
+        && (savings(product) || 0) >= Number(byId('discountFilter').value)
+        && (product.kokaScore || 0) >= Number(byId('scoreFilter').value);
+    }).sort((a, b) => byId('sortFilter').value === 'price' ? a.price - b.price : (b.kokaScore || 0) - (a.kokaScore || 0));
+  }
+  function updateResults() {
+    const matches = selectProducts();
+    byId('dealGrid').replaceChildren(...matches.map(renderCard));
+    byId('emptyState').hidden = matches.length !== 0;
+    byId('resultCount').textContent = `${matches.length} von ${products.length} Beispielprodukten` + (byId('searchInput').value.trim() ? ` für „${byId('searchInput').value.trim()}“` : ' · Alle Suchbegriffe');
+    byId('clearSearch').hidden = !byId('searchInput').value;
+    renderChips();
+    document.querySelectorAll('.category').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.category === byId('categoryFilter').value)));
+  }
+  function searchProducts() { updateResults(); byId('deals').scrollIntoView(); }
   function filterCategory(category) {
-    document.getElementById("searchInput").value = category;
-    searchProducts();
+    byId('searchInput').value = ''; byId('categoryFilter').value = category; searchProducts();
   }
-
-  function demoNotice() {
-    alert(
-      "Demo-Angebot: Dieser Button wird später über einen gekennzeichneten " +
-      "Affiliate-Link direkt zum Händler führen."
-    );
+  // Feedback uses a native modal dialog: focus is trapped, ESC closes it.
+  let dialogTrigger;
+  function openDialog(title, intro) {
+    dialogTrigger = document.activeElement;
+    byId('dialogTitle').textContent = title; byId('dialogIntro').textContent = intro;
+    byId('dialogBody').replaceChildren(); byId('infoDialog').showModal(); byId('dialogClose').focus();
   }
-
-  function legalNotice(page) {
+  function demoNotice(product) {
+    openDialog(product.name, 'Demo-Vergleich: Alle Preise und Bewertungen sind fiktiv. Dieses Produkt ist hier nicht kaufbar; es sind keine Händlerangebote angebunden.');
+    const summary = element('div','detail-summary');
+    summary.append(element('strong','',money(product.price,product.currency)), element('span','',`KokaScore ${product.kokaScore}/100 · Beispielwert`));
+    const history = element('section','history-placeholder'); history.dataset.slot = 'price-history';
+    history.append(element('h3','','Preisentwicklung'), element('p','','Noch keine Preishistorie verfügbar. Hier erscheint ein Preisverlauf, sobald verlässliche historische Daten vorliegen.'));
+    // Future normalized priceInsights / scoreFactors must include supporting data;
+    // do not manufacture claims or a chart when these fields are empty.
+    const factors = element('p','','Preisniveau, Ersparnis, Händlervergleich und Verfügbarkeit sollen den Score künftig erklären. Für dieses Beispiel liegen keine berechneten Teilbewertungen vor.');
+    byId('dialogBody').append(summary, factors, history);
+  }
+  function legalNotice(event, page) {
     event.preventDefault();
-    alert(
-      page +
-      " wird vor dem öffentlichen Affiliate-Start als eigene Seite eingerichtet."
-    );
+    openDialog(page, 'Platzhalter: Die vollständigen rechtlichen Inhalte werden vor dem kommerziellen Start ergänzt.');
+    byId('dialogBody').append(element('p','', page === 'Affiliate-Hinweis' ? 'DealKoka kann über gekennzeichnete Affiliate-Links eine Provision erhalten. Der Preis für dich erhöht sich dadurch nicht. Aktuell sind keine solchen Links aktiv.' : 'Diese Ansicht ist noch keine vollständige rechtliche Seite.'));
   }
-
-  document
-    .getElementById("searchInput")
-    .addEventListener("keydown", function(event) {
-      if (event.key === "Enter") {
-        searchProducts();
-      }
-    });
+  function resetAll() {
+    byId('filters').reset(); byId('searchInput').value = ''; byId('sortFilter').value = 'best'; updateResults();
+  }
+  const filterDefaults = {categoryFilter:'',priceFilter:'',discountFilter:'0',scoreFilter:'0'};
+  function renderChips() {
+    const chips = [];
+    const addChip = (label, remove) => {
+      const chip = element('button','filter-chip',label + ' ×'); chip.type = 'button'; chip.setAttribute('aria-label',label + ' entfernen');
+      chip.addEventListener('click',() => { remove(); updateResults(); byId('sortFilter').focus(); }); chips.push(chip);
+    };
+    if (byId('searchInput').value.trim()) addChip('Suche: ' + byId('searchInput').value.trim(),() => { byId('searchInput').value = ''; });
+    for (const [id,defaultValue] of Object.entries(filterDefaults)) {
+      const select = byId(id);
+      if (select.value !== defaultValue) addChip(select.parentElement.firstChild.textContent + ': ' + select.selectedOptions[0].textContent,() => { select.value = defaultValue; });
+    }
+    if (chips.length) {
+      const reset = element('button','reset-all','Alle zurücksetzen'); reset.type='button';
+      reset.addEventListener('click',() => { resetAll(); byId('sortFilter').focus(); }); chips.push(reset);
+    }
+    byId('activeFilters').replaceChildren(...chips);
+  }
+  function setMenu(open) { byId('menuToggle').setAttribute('aria-expanded',String(open)); byId('mainNav').classList.toggle('is-open',open); }
+  function setFilters(open) { byId('filterToggle').setAttribute('aria-expanded',String(open)); byId('filters').classList.toggle('is-open',open); }
+  byId('menuToggle').addEventListener('click',() => setMenu(byId('menuToggle').getAttribute('aria-expanded') !== 'true'));
+  byId('mainNav').addEventListener('click',event => { if (event.target.closest('a')) setMenu(false); });
+  byId('filterToggle').addEventListener('click',() => setFilters(byId('filterToggle').getAttribute('aria-expanded') !== 'true'));
+  byId('closeFilters').addEventListener('click',() => { setFilters(false); byId('filterToggle').focus(); });
+  document.addEventListener('keydown',event => {
+    if (event.key !== 'Escape' || byId('infoDialog').open) return;
+    if (byId('menuToggle').getAttribute('aria-expanded') === 'true') { setMenu(false); byId('menuToggle').focus(); }
+    else if (byId('filterToggle').getAttribute('aria-expanded') === 'true') { setFilters(false); byId('filterToggle').focus(); }
+  });
+  byId('infoDialog').addEventListener('keydown', event => {
+    if (event.key !== 'Tab') return;
+    const items = [...byId('infoDialog').querySelectorAll('button, a[href], input, select, textarea, [tabindex="0"]')].filter(item => !item.disabled && item.getClientRects().length);
+    const first = items[0], last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+  byId('dialogClose').addEventListener('click',() => byId('infoDialog').close());
+  byId('infoDialog').addEventListener('close',() => { if (dialogTrigger?.isConnected) dialogTrigger.focus(); });
+  byId('clearSearch').addEventListener('click',() => { byId('searchInput').value = ''; updateResults(); byId('searchInput').focus(); });
+  byId('emptyReset').addEventListener('click',() => { resetAll(); byId('sortFilter').focus(); });
+  categories.forEach(category => {
+    const option = element('option', '', category.name); option.value = category.id; byId('categoryFilter').append(option);
+    const button = element('button', 'category'); button.type = 'button'; button.dataset.category = category.id;
+    const icon = element('span', 'category-icon'); icon.append(iconFor(category.id));
+    button.append(icon, element('span', 'category-name', category.name));
+    button.addEventListener('click', () => filterCategory(category.id)); byId('categoryGrid').append(button);
+  });
+  byId('searchForm').addEventListener('submit', event => { event.preventDefault(); searchProducts(); });
+  byId('searchInput').addEventListener('input', updateResults);
+  byId('filters').addEventListener('submit', event => event.preventDefault());
+  byId('filters').addEventListener('change', event => { if (event.target.id === 'categoryFilter') byId('searchInput').value = ''; updateResults(); });
+  byId('sortFilter').addEventListener('change', updateResults);
+  updateResults();
 </script>
 
 </body>
