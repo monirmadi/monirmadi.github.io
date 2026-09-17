@@ -1,0 +1,5 @@
+.env
+.env.*
+.psaksi-local/
+node_modules/
+*.log
