@@ -40,3 +40,11 @@ test('unassessed and rejected graphs cannot become user-facing plans',async()=>{
  const {report}=await run(false,true);assert.equal(publicResolutionPlan(report),null);
  const good=(await run()).report;good.SEMANTIC_GATE.semanticReady=false;assert.equal(publicResolutionPlan(good),null);
 });
+test('model diagnostics contain operational codes only, never query or raw response',async()=>{
+ const {createLocalLanguageRuntime}=require('../server/local-language-runtime.cjs');
+ const {emptyNeed}=require('../contracts/universal.cjs');
+ const runtime=createLocalLanguageRuntime({fetchImpl:async()=>new Response('private response',{status:502})});
+ await assert.rejects(runtime.extractor.extract(emptyNeed({id:'test',originalText:'private query'})));
+ assert.deepEqual(runtime.failures,[{stage:'extraction',code:'LOCAL_MODEL_HTTP_ERROR'}]);
+ assert(!JSON.stringify(runtime.failures).includes('private'));
+});

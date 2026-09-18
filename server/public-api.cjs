@@ -57,6 +57,8 @@ function createPublicSearch({ollamaEnabled=false,openaiApiKey,modelFetch=globalT
   runtime:createLocalLanguageRuntime({model:hostedModel?'gpt-4.1-mini':'qwen2.5-coder:7b-instruct',fetchImpl:hostedModel?createOpenAIModelFetch({apiKey:openaiApiKey,fetchImpl:modelFetch}):ollamaEnabled?modelFetch:unavailable,timeoutMs:hostedModel?30000:3000}),
   ...(providerSearch?{search:providerSearch}:{})
  })(input,authorization);
+ // Operational codes only: never log input, model output, credentials or identifiers.
+ if(hostedModel&&report.MODEL_FAILURES?.length)console.warn('PSAKSI_MODEL_FAILURE',JSON.stringify(report.MODEL_FAILURES));
  // A deliberately disabled model is a capability limit, not a transient outage.
  if(!hostedModel&&!ollamaEnabled&&report.stage==='extraction'&&['LOCAL_EXTRACTION_FAILED','EXTRACTOR_FAILED'].includes(report.code)){
   return {...report,code:'PUBLIC_LANGUAGE_UNAVAILABLE',REFINEMENT_ALLOWED:false,CONTEXT_KEEP_PRIOR:false};
