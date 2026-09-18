@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
-const {createPublicApi,createPublicSearch,publicConfiguration,DEFAULT_ORIGINS}=require('../server/public-api.cjs');
+const {createPublicApi,createPublicSearch,createOpenAIModelFetch,publicConfiguration,DEFAULT_ORIGINS}=require('../server/public-api.cjs');
 const {inputFingerprint}=require('../server/universal-real-search.cjs');
 const auth=input=>({mode:'EXPLICIT_READ_ONLY',inputSha256:inputFingerprint(input),publicSearchDisclosure:true,contextTurns:[input]});
 async function open(t,options={}){const server=createPublicApi(options);await new Promise(r=>server.listen(0,'127.0.0.1',r));t.after(()=>new Promise(r=>server.close(r)));return `http://127.0.0.1:${server.address().port}`;}
@@ -29,6 +29,13 @@ test('all three Fast Path provider families route through the existing brain wit
  const routed=[];let modelCalls=0;const run=createPublicSearch({ollamaEnabled:true,modelFetch:async()=>{modelCalls++;throw Error('MODEL_MUST_NOT_RUN');},providerSearch:async r=>{routed.push(r.providerId);return {results:[]};}});
  for(const input of ['Café in Berlin','How do I get from Alexanderplatz to Potsdam?','Find public information about bicycle infrastructure in Berlin.'])await run(input,auth(input));
  assert.equal(modelCalls,0);for(const provider of ['photon-places','bvg-transport-v6','govdata-catalog'])assert(routed.includes(provider),provider);
+});
+test('OpenAI adapter converts structured chat output to the runtime contract',async()=>{
+ let captured;
+ const adapter=createOpenAIModelFetch({apiKey:'sk-test',fetchImpl:async(url,init)=>{captured={url,init};return new Response(JSON.stringify({choices:[{message:{content:'{"ok":true}'}}]}),{status:200});}});
+ const response=await adapter('http://127.0.0.1:11434/api/generate',{body:JSON.stringify({model:'gpt-4.1-mini',system:'system',prompt:'prompt',options:{num_predict:64}})});
+ assert.equal(response.status,200);assert.deepEqual(JSON.parse(JSON.parse(await response.text()).response),{ok:true});
+ assert.equal(captured.url,'https://api.openai.com/v1/chat/completions');assert.equal(captured.init.headers.Authorization,'Bearer sk-test');
 });
 
 test('articles do not require a model and unsupported conditions are never discarded',async()=>{

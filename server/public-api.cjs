@@ -33,15 +33,28 @@ function readBody(req,maxBytes){
  });
 }
 // Optional local model only. Fast Path selection and all safety gates remain in createBetaSearch.
-function createPublicSearch({ollamaEnabled=false,modelFetch=globalThis.fetch,providerSearch}={}){
+function createOpenAIModelFetch({apiKey,model='gpt-4.1-mini',fetchImpl=globalThis.fetch}={}){
+ if(typeof apiKey!=='string'||!apiKey.startsWith('sk-'))throw Error('OPENAI_API_KEY_MISSING');
+ return async(_url,init={})=>{
+  const request=JSON.parse(init.body);
+  const response=await fetchImpl('https://api.openai.com/v1/chat/completions',{method:'POST',redirect:'error',signal:init.signal,headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},body:JSON.stringify({model,messages:[{role:'system',content:request.system},{role:'user',content:request.prompt}],temperature:0,max_tokens:request.options?.num_predict??768,response_format:{type:'json_object'}})});
+  if(!response.ok)return response;
+  const payload=await response.json();
+  const content=payload.choices?.[0]?.message?.content;
+  if(typeof content!=='string')return new Response('',{status:502});
+  return new Response(JSON.stringify({done:true,done_reason:'stop',model,created_at:new Date().toISOString(),response:content}),{status:200,headers:{'Content-Type':'application/json'}});
+ };
+}
+function createPublicSearch({ollamaEnabled=false,openaiApiKey,modelFetch=globalThis.fetch,providerSearch}={}){
+ const hostedModel=typeof openaiApiKey==='string'&&openaiApiKey.length>0;
  const unavailable=async()=>{throw Error('LOCAL_MODEL_DISABLED');};
  return async(input,authorization)=>{
  const report=await createBetaSearch({
-  runtime:createLocalLanguageRuntime({fetchImpl:ollamaEnabled?modelFetch:unavailable,timeoutMs:3000}),
+  runtime:createLocalLanguageRuntime({model:hostedModel?'gpt-4.1-mini':'qwen2.5-coder:7b-instruct',fetchImpl:hostedModel?createOpenAIModelFetch({apiKey:openaiApiKey,fetchImpl:modelFetch}):ollamaEnabled?modelFetch:unavailable,timeoutMs:hostedModel?12000:3000}),
   ...(providerSearch?{search:providerSearch}:{})
  })(input,authorization);
  // A deliberately disabled model is a capability limit, not a transient outage.
- if(!ollamaEnabled&&report.stage==='extraction'&&['LOCAL_EXTRACTION_FAILED','EXTRACTOR_FAILED'].includes(report.code)){
+ if(!hostedModel&&!ollamaEnabled&&report.stage==='extraction'&&['LOCAL_EXTRACTION_FAILED','EXTRACTOR_FAILED'].includes(report.code)){
   return {...report,code:'PUBLIC_LANGUAGE_UNAVAILABLE',REFINEMENT_ALLOWED:false,CONTEXT_KEEP_PRIOR:false};
  }
  return report;
@@ -53,13 +66,13 @@ function publicConfiguration(env=process.env){
  if(env.PSAKSI_OLLAMA_ENABLED!==undefined&&!['true','false'].includes(env.PSAKSI_OLLAMA_ENABLED))throw Error('INVALID_MODEL_CONFIGURATION');
  const allowedOrigins=env.PSAKSI_PUBLIC_ALLOWED_ORIGINS?.split(',').map(s=>s.trim())??DEFAULT_ORIGINS;
  validateOrigins(allowedOrigins);
- return {port,host,allowedOrigins,ollamaEnabled:env.PSAKSI_OLLAMA_ENABLED==='true'};
+ return {port,host,allowedOrigins,ollamaEnabled:env.PSAKSI_OLLAMA_ENABLED==='true',openaiApiKey:env.OPENAI_API_KEY};
 }
-function createPublicApi({ollamaEnabled=false,allowedOrigins=DEFAULT_ORIGINS,clock=Date.now,runSearch,rateLimit=20,globalRateLimit=120,maxClients=1000,maxConversations=200,maxConcurrent=2,conversationTtlMs=600000,searchTimeoutMs=45000}={}){
+function createPublicApi({ollamaEnabled=false,openaiApiKey,allowedOrigins=DEFAULT_ORIGINS,clock=Date.now,runSearch,rateLimit=20,globalRateLimit=120,maxClients=1000,maxConversations=200,maxConcurrent=2,conversationTtlMs=600000,searchTimeoutMs=45000}={}){
  const origins=validateOrigins(allowedOrigins),conversations=new Map(),clients=new Map();let running=0,globalBucket={count:0,until:0};
  for(const n of [rateLimit,globalRateLimit,maxClients,maxConversations,maxConcurrent,conversationTtlMs,searchTimeoutMs])if(!Number.isSafeInteger(n)||n<1)throw Error('INVALID_LIMIT_CONFIGURATION');
  // Fresh runtime receipts per invocation; provider pacing/cache stays in the existing shared transport.
- const search=runSearch??createPublicSearch({ollamaEnabled});
+ const search=runSearch??createPublicSearch({ollamaEnabled,openaiApiKey});
  const server=http.createServer({maxHeaderSize:8192},async(req,res)=>{
   let locale='en',conversationId=null;
   req.on('error',()=>{}); // Early rejection/body teardown must not leave an unhandled stream error.
@@ -133,4 +146,4 @@ if(require.main===module){
   server.listen(port,host,()=>console.log('PSAKSI public API listening on port '+port));
  }catch{console.error('PUBLIC_API_CONFIGURATION_INVALID');process.exitCode=1;}
 }
-module.exports={createPublicApi,createPublicSearch,publicConfiguration,validateBody,DEFAULT_ORIGINS};
+module.exports={createPublicApi,createPublicSearch,createOpenAIModelFetch,publicConfiguration,validateBody,DEFAULT_ORIGINS};

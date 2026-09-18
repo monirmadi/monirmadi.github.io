@@ -80,7 +80,7 @@ function compileExtraction(source,output,extractor){
   return {need,textReferences:references};
 }
 function createLocalLanguageRuntime({model='qwen2.5-coder:7b-instruct',fetchImpl=globalThis.fetch,now=Date.now,timeoutMs=120000,diagnostics=false,contextTurns=[]}={}){
- if(!['qwen2.5-coder:7b-instruct','qwen2.5-coder:3b'].includes(model))throw Error('LOCAL_MODEL_NOT_ALLOWED');
+ if(!['qwen2.5-coder:7b-instruct','qwen2.5-coder:3b','gpt-4.1-mini'].includes(model))throw Error('LOCAL_MODEL_NOT_ALLOWED');
  const receipts=[],traces=[];
  const contextPolicy=contextTurns.length>1?' Evidence is a chronological conversation of user turns. Resolve follow-ups as edits to the active need: retain all prior conditions unless the user explicitly replaces/removes them; later explicit corrections supersede earlier values. A vague request for better results is NOT permission to relax constraints. Do not combine a clearly new need with the prior one. Ambiguous reference or incompatible changes require abstention/clarification. Coverage concerns the final active need, including retained conditions and explicit edits.':'';
  const turnRanges=[];let offset=0;for(const turn of contextTurns){turnRanges.push({start:offset,end:offset+turn.length});offset+=turn.length+1;}

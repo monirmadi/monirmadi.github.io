@@ -8,6 +8,8 @@ Render's `PORT` takes precedence over `PSAKSI_PUBLIC_PORT`; host defaults to
 
 Required environment variables: none to enter manually (Render supplies PORT).
 Optional: NODE_VERSION, PSAKSI_PUBLIC_ALLOWED_ORIGINS, PSAKSI_OLLAMA_ENABLED,
+OPENAI_API_KEY. When OPENAI_API_KEY is present, the API uses OpenAI GPT-4.1 mini
+for semantic fallback through the server-side API; never expose this key to the browser.
 PSAKSI_PUBLIC_HOST, PSAKSI_PUBLIC_PORT. Keep the default public host on Render.
 Default exact CORS origins are https://preview.psaksi.de and
 https://relaxing-bird.10web.cloud. OPTIONS allows POST and Content-Type only.
