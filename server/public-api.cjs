@@ -59,6 +59,7 @@ function createPublicSearch({ollamaEnabled=false,openaiApiKey,modelFetch=globalT
  })(input,authorization);
  // Operational codes only: never log input, model output, credentials or identifiers.
  if(hostedModel&&report.MODEL_FAILURES?.length)console.warn('PSAKSI_MODEL_FAILURE',JSON.stringify(report.MODEL_FAILURES));
+ if(hostedModel&&['extraction','semantic'].includes(report.stage))console.warn('PSAKSI_ANALYSIS_STATUS',JSON.stringify({stage:report.stage,code:/^[A-Z_]{1,100}$/.test(report.code??'')?report.code:'BLOCKED',graphDecision:['support','abstain','conflict'].includes(report.SEMANTIC_GATE?.graphDecision)?report.SEMANTIC_GATE.graphDecision:null,expectedClaims:report.SEMANTIC_GATE?.expectedClaims??null,supportedClaims:report.SEMANTIC_GATE?.supportedClaims??null}));
  // A deliberately disabled model is a capability limit, not a transient outage.
  if(!hostedModel&&!ollamaEnabled&&report.stage==='extraction'&&['LOCAL_EXTRACTION_FAILED','EXTRACTOR_FAILED'].includes(report.code)){
   return {...report,code:'PUBLIC_LANGUAGE_UNAVAILABLE',REFINEMENT_ALLOWED:false,CONTEXT_KEEP_PRIOR:false};
