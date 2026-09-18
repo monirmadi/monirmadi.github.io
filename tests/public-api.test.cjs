@@ -80,3 +80,15 @@ test('parallel follow-up cannot mutate another in-flight turn',async t=>{
 test('Arabic coffee alias remains a closed grammar, never a private-query shortcut',()=>{assert.equal(parsePublicIntent('قهوة').category,'cafe');for(const input of ['قهوة لشخص عنوانه الخاص','قهوة private@example.org','قهوة في برلين ورقم هاتفي'])assert.equal(parsePublicIntent(input),null);});
 
 test('model infrastructure failure is not mislabeled as a user clarification',async t=>{const call=await open(t,{runSearch:async()=>({stage:'extraction',code:'LOCAL_EXTRACTION_FAILED'})});const r=await call(body('unusual need'));assert.equal(r.status,503);assert.equal(r.body.error.code,'temporarily_unavailable');});
+
+test('companion requests preserve the person target in Arabic, English and German without public lookup',async t=>{
+ let lookups=0;const call=await open(t,{rateLimit:100,runSearch:createBetaSearch({search:async()=>{lookups++;throw Error('unexpected public lookup');}})});
+ for(const [message,locale] of [['بدي اشرب قهوة مع شخص','ar'],['بدي أشرب قهوة مع حدا في برلين','ar'],['I want to have coffee with someone in Berlin','en'],['Ich möchte mit jemandem Kaffee trinken in Berlin','de']]){
+  const r=await call(body(message,{locale}));assert.equal(r.status,200);assert.equal(r.body.status,'unsupported');assert.equal(r.body.resultType,'PERSON');assert.equal(r.body.nextAction,'open_account');assert.deepEqual(r.body.results,[]);assert.equal(r.body.canRefine,false);assert.equal(r.body.error,null);
+ }
+ assert.equal(lookups,0);
+});
+test('companion grammar consumes the whole request and never erases negation, private details or criteria',()=>{
+ for(const query of ['I do not want to have coffee with someone','بدي اشرب قهوة مع شخص لا يحب الموسيقى','I want to have coffee with someone at my home','I want to have coffee with someone with shared interests','I want to have coffee with someone in Berlin private@example.org'])assert.equal(parsePublicIntent(query),null);
+ for(const query of ['Café in Berlin','قهوة في برلين'])assert.equal(parsePublicIntent(query).kind,'PLACE');
+});

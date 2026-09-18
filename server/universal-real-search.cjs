@@ -74,6 +74,13 @@ function createUniversalRealSearch({runtime:baseRuntime=createLocalLanguageRunti
   const ready=semanticReady(assessed);
   report.SEMANTIC_GATE={semanticReady:ready,runnerStatus:assessed.status,runnerCode:assessed.code??null,graphDecision:assessed.assessment?.graph?.decision??null,expectedClaims:assessed.envelope?.claims?.length??null,supportedClaims:assessed.assessment?.claims?.filter(c=>c.decision==='support').length??0,claimDecisions:assessed.assessment?.claims??null};
   if(!ready)return finish('semantic',assessed.code||'SEMANTIC_SUPPORT_OR_COVERAGE_NOT_ESTABLISHED');
+  // People are not interchangeable with places or public directory entries.
+  // Until opted-in matching is connected, do not disclose or search for people
+  // through public providers, even when a composite need also names a place.
+  if(intent.entities.some(e=>e.kind?.value==='PERSON')||intent.roles.some(r=>['CO_PARTICIPANT','HELPER','EXPERIENCED_PERSON'].includes(r.role?.value))){
+   report.REFINEMENT_ALLOWED=false;
+   return finish('provider-selection','PERSON_MATCHING_NOT_CONNECTED');
+  }
   const context={source:x.source,expectedProvider:x.expectedProvider},wire={proposal:x.proposal,textReferences:x.textReferences};
   const route=await timed('strategy-routing',()=>routeUniversalSearch(wire,context));report.ROUTE=route;report.STRATEGY=route.primaryStrategy?.kind??null;
   report.RESOLUTION_INTELLIGENCE=await timed('need-decomposition',()=>require('./resolution-bridge.cjs').resolutionFromExtraction(wire,context));

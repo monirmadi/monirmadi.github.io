@@ -19,6 +19,14 @@ function location(text){const n=normalize(text);const m=n.match(/^(?:in|at|near|
 function parsePublicIntent(text){
  if(typeof text!=='string'||text.length>240||/[\n\r\d@:/\\<>]/u.test(text))return null;
  const n=normalize(text);if(!n)return null;
+ // Exact, fully consumed companion requests. Rich/ambiguous requests still
+ // require semantic extraction; the presence of 'coffee' alone proves nothing.
+ const companion=n.match(/^(?:i (?:want|would like) (?:to (?:have|drink) coffee with (?:someone|a person)|someone to (?:have|drink) coffee with)|(?:find me |find )?(?:a |someone as a )?coffee companion|ich (?:möchte|will) mit (?:jemandem|einer person) kaffee trinken|(?:بدي|أريد|اريد) (?:أشرب|اشرب|شرب) قهوة مع (?:شخص|حدا|أحد|احد))(?: (.+))?$/u);
+ if(companion){
+  const place=companion[1]?location(companion[1]):null;
+  if(companion[1]&&!place)return null;
+  return {family:'person',verb:'FIND',kind:'PERSON',term:'coffee companion',place};
+ }
  const prefix=n.replace(/^(?:find(?: me)?(?: a| an)?|i want(?: a| an)?|i am looking for(?: a| an)?|ich suche(?: einen| ein| eine)?|suche(?: einen| ein| eine)?|ابحث عن|أبحث عن|بدي)\s+/u,'').replace(/^(?:a|an|ein|eine|einen)\s+/u,'');
  for(const [category,words]of Object.entries(CATEGORIES))for(const word of words){
   if(prefix===word)return {family:'place',category,place:null,verb:'FIND',kind:'PLACE',term:category};
