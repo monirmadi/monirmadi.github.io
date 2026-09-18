@@ -74,6 +74,12 @@ function createUniversalRealSearch({runtime:baseRuntime=createLocalLanguageRunti
   const ready=semanticReady(assessed);
   report.SEMANTIC_GATE={semanticReady:ready,runnerStatus:assessed.status,runnerCode:assessed.code??null,graphDecision:assessed.assessment?.graph?.decision??null,expectedClaims:assessed.envelope?.claims?.length??null,supportedClaims:assessed.assessment?.claims?.filter(c=>c.decision==='support').length??0,claimDecisions:assessed.assessment?.claims??null};
   if(!ready)return finish('semantic',assessed.code||'SEMANTIC_SUPPORT_OR_COVERAGE_NOT_ESTABLISHED');
+  const context={source:x.source,expectedProvider:x.expectedProvider},wire={proposal:x.proposal,textReferences:x.textReferences};
+  const route=await timed('strategy-routing',()=>routeUniversalSearch(wire,context));report.ROUTE=route;report.STRATEGY=route.primaryStrategy?.kind??null;
+  report.RESOLUTION_INTELLIGENCE=await timed('need-decomposition',()=>require('./resolution-bridge.cjs').resolutionFromExtraction(wire,context));
+  if(report.RESOLUTION_INTELLIGENCE.status==='INTERPRETED'&&continuing){report.RESOLUTION_INTELLIGENCE.need.revision=prior.need.revision+1;report.RESOLUTION_INTELLIGENCE.decomposition=require('./resolution-engine.cjs').decomposeNeed(report.RESOLUTION_INTELLIGENCE.need);}
+  if(report.RESOLUTION_INTELLIGENCE.status==='INTERPRETED'&&continuing&&authorization.previousResolution&&require('../contracts/need-resolution.cjs').validateResolutionNeed(authorization.previousResolution).valid)report.NEED_CHANGES=require('./resolution-memory.cjs').constraintChanges(authorization.previousResolution,report.RESOLUTION_INTELLIGENCE.need);
+  if(report.RESOLUTION_INTELLIGENCE.status==='INTERPRETED'&&(intent.actions.length>1||intent.entities.length>1))Object.assign(report.RESOLUTION_INTELLIGENCE,require('./resolution-bridge.cjs').analyzeResolution(report.RESOLUTION_INTELLIGENCE.need,[],resolutionOptions));
   // People are not interchangeable with places or public directory entries.
   // Until opted-in matching is connected, do not disclose or search for people
   // through public providers, even when a composite need also names a place.
@@ -81,12 +87,6 @@ function createUniversalRealSearch({runtime:baseRuntime=createLocalLanguageRunti
    report.REFINEMENT_ALLOWED=false;
    return finish('provider-selection','PERSON_MATCHING_NOT_CONNECTED');
   }
-  const context={source:x.source,expectedProvider:x.expectedProvider},wire={proposal:x.proposal,textReferences:x.textReferences};
-  const route=await timed('strategy-routing',()=>routeUniversalSearch(wire,context));report.ROUTE=route;report.STRATEGY=route.primaryStrategy?.kind??null;
-  report.RESOLUTION_INTELLIGENCE=await timed('need-decomposition',()=>require('./resolution-bridge.cjs').resolutionFromExtraction(wire,context));
-  if(report.RESOLUTION_INTELLIGENCE.status==='INTERPRETED'&&continuing){report.RESOLUTION_INTELLIGENCE.need.revision=prior.need.revision+1;report.RESOLUTION_INTELLIGENCE.decomposition=require('./resolution-engine.cjs').decomposeNeed(report.RESOLUTION_INTELLIGENCE.need);}
-  if(report.RESOLUTION_INTELLIGENCE.status==='INTERPRETED'&&continuing&&authorization.previousResolution&&require('../contracts/need-resolution.cjs').validateResolutionNeed(authorization.previousResolution).valid)report.NEED_CHANGES=require('./resolution-memory.cjs').constraintChanges(authorization.previousResolution,report.RESOLUTION_INTELLIGENCE.need);
-  if(report.RESOLUTION_INTELLIGENCE.status==='INTERPRETED'&&(intent.actions.length>1||intent.entities.length>1))Object.assign(report.RESOLUTION_INTELLIGENCE,require('./resolution-bridge.cjs').analyzeResolution(report.RESOLUTION_INTELLIGENCE.need,[],resolutionOptions));
   if(intent.actions.length>1||intent.entities.length>1){report.NEED_RESOLUTION=require('./need-resolution.cjs').planNeedResolution(route);report.REFINEMENT_ALLOWED=true;return finish('resolution-planning','COMPOSITE_NEED_REQUIRES_COMPONENT_EVIDENCE_AND_INDEPENDENT_GATES');}
   const selection=await timed('provider-selection',()=>selectProviders(route,{allowPartialDiscovery:true}));report.PROVIDER_SELECTION=selection;
   report.NEED_RESOLUTION=require('./need-resolution.cjs').planNeedResolution(route);

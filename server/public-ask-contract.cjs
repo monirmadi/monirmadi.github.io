@@ -40,6 +40,12 @@ function envelope({conversationId=null,status='error',locale='en',key=status,res
 function errorResponse(code,locale='en',conversationId=null){return envelope({locale,conversationId,key:code,error:{code}});}
 function httpsUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}}
 function publicResponse(report,{conversationId,locale,canRefine,expiresAt}){
+ const {publicResolutionPlan,compositeMessage}=require('./public-resolution-plan.cjs');
+ const plan=publicResolutionPlan(report);
+ if(plan?.components.length>1&&['PERSON_MATCHING_NOT_CONNECTED','COMPOSITE_NEED_REQUIRES_COMPONENT_EVIDENCE_AND_INDEPENDENT_GATES'].includes(report.code))return {
+  ...envelope({conversationId,locale,expiresAt,status:'unsupported',resultType:'COMPOSITE'}),
+  message:compositeMessage(plan,locale),resolutionPlan:plan,nextAction:'open_account'
+ };
  if(report.code==='PERSON_MATCHING_NOT_CONNECTED')return {...envelope({conversationId,locale,expiresAt,status:'unsupported',key:'personPending',resultType:'PERSON'}),nextAction:'open_account'};
  if(report.code==='PUBLIC_LANGUAGE_UNAVAILABLE')return envelope({conversationId,locale,expiresAt,status:'unsupported',key:'languageUnavailable'});
  if(report.code==='LOCAL_EXTRACTION_FAILED'||['extraction','semantic'].includes(report.stage)&&['EXTRACTOR_FAILED','ASSESSOR_FAILED','TIMEOUT','CANCELLED'].includes(report.code))return errorResponse('temporarily_unavailable',locale,conversationId);

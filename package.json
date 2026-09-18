@@ -9,7 +9,7 @@
   "scripts": {
     "build": "node scripts/check-api-build.cjs",
     "start": "node server/public-api.cjs",
-    "test": "node --test tests/public-api.test.cjs tests/render-api.test.cjs",
+    "test": "node --test tests/public-api.test.cjs tests/render-api.test.cjs tests/resolution-plan.test.cjs",
     "check:live": "node scripts/public-api-live-check.cjs"
   }
 }
