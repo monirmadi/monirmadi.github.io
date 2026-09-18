@@ -50,7 +50,10 @@ function createPublicSearch({ollamaEnabled=false,openaiApiKey,modelFetch=globalT
  const unavailable=async()=>{throw Error('LOCAL_MODEL_DISABLED');};
  return async(input,authorization)=>{
  const report=await createBetaSearch({
-  runtime:createLocalLanguageRuntime({model:hostedModel?'gpt-4.1-mini':'qwen2.5-coder:7b-instruct',fetchImpl:hostedModel?createOpenAIModelFetch({apiKey:openaiApiKey,fetchImpl:modelFetch}):ollamaEnabled?modelFetch:unavailable,timeoutMs:hostedModel?12000:3000}),
+  // Hosted model calls can take longer than the free Render instance wake-up
+  // and first-token latency. Keep the request bounded, but avoid treating a
+  // normal GPT response as an unreachable public-search network.
+  runtime:createLocalLanguageRuntime({model:hostedModel?'gpt-4.1-mini':'qwen2.5-coder:7b-instruct',fetchImpl:hostedModel?createOpenAIModelFetch({apiKey:openaiApiKey,fetchImpl:modelFetch}):ollamaEnabled?modelFetch:unavailable,timeoutMs:hostedModel?30000:3000}),
   ...(providerSearch?{search:providerSearch}:{})
  })(input,authorization);
  // A deliberately disabled model is a capability limit, not a transient outage.
