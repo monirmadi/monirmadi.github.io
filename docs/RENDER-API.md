@@ -29,7 +29,10 @@ as text. API/transport errors expose safe codes, never stack traces or credentia
 
 Ollama is disabled by default, including on Render. Existing Photon, BVG and
 GovData Fast Paths still use their real provider implementations and privacy gates.
-Requests requiring semantic fallback return HTTP 503 temporarily_unavailable.
+When Ollama is disabled, requests requiring semantic fallback return HTTP 200
+with status unsupported and explicit guidance, without dropping user conditions
+or contacting providers. When explicitly enabled but unavailable, genuine model
+failures still return HTTP 503 temporarily_unavailable.
 No external paid model or substitute results are used. If an operator explicitly
 enables PSAKSI_OLLAMA_ENABLED, the existing model qwen2.5-coder:7b-instruct must be
 available at loopback 127.0.0.1:11434. Unreachable calls fail safely, bounded to

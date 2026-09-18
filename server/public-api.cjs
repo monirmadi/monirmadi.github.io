@@ -35,10 +35,17 @@ function readBody(req,maxBytes){
 // Optional local model only. Fast Path selection and all safety gates remain in createBetaSearch.
 function createPublicSearch({ollamaEnabled=false,modelFetch=globalThis.fetch,providerSearch}={}){
  const unavailable=async()=>{throw Error('LOCAL_MODEL_DISABLED');};
- return (input,authorization)=>createBetaSearch({
+ return async(input,authorization)=>{
+ const report=await createBetaSearch({
   runtime:createLocalLanguageRuntime({fetchImpl:ollamaEnabled?modelFetch:unavailable,timeoutMs:3000}),
   ...(providerSearch?{search:providerSearch}:{})
  })(input,authorization);
+ // A deliberately disabled model is a capability limit, not a transient outage.
+ if(!ollamaEnabled&&report.stage==='extraction'&&['LOCAL_EXTRACTION_FAILED','EXTRACTOR_FAILED'].includes(report.code)){
+  return {...report,code:'PUBLIC_LANGUAGE_UNAVAILABLE',REFINEMENT_ALLOWED:false,CONTEXT_KEEP_PRIOR:false};
+ }
+ return report;
+ };
 }
 function publicConfiguration(env=process.env){
  const port=Number(env.PORT??env.PSAKSI_PUBLIC_PORT??8787),host=env.PSAKSI_PUBLIC_HOST??'0.0.0.0';

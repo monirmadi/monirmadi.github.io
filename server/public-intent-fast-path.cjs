@@ -19,7 +19,7 @@ function location(text){const n=normalize(text);const m=n.match(/^(?:in|at|near|
 function parsePublicIntent(text){
  if(typeof text!=='string'||text.length>240||/[\n\r\d@:/\\<>]/u.test(text))return null;
  const n=normalize(text);if(!n)return null;
- const prefix=n.replace(/^(?:find(?: me)?(?: a| an)?|i want(?: a| an)?|i am looking for(?: a| an)?|ich suche(?: einen| ein| eine)?|suche(?: einen| ein| eine)?|ابحث عن|أبحث عن|بدي)\s+/u,'');
+ const prefix=n.replace(/^(?:find(?: me)?(?: a| an)?|i want(?: a| an)?|i am looking for(?: a| an)?|ich suche(?: einen| ein| eine)?|suche(?: einen| ein| eine)?|ابحث عن|أبحث عن|بدي)\s+/u,'').replace(/^(?:a|an|ein|eine|einen)\s+/u,'');
  for(const [category,words]of Object.entries(CATEGORIES))for(const word of words){
   if(prefix===word)return {family:'place',category,place:null,verb:'FIND',kind:'PLACE',term:category};
   if(prefix.startsWith(word+' ')){const rest=prefix.slice(word.length+1);const areaOnly=lookup(AREAS,rest.replace(/^(?:in|في) /u,''));if(areaOnly)return {family:'place',category,area:areaOnly,place:null,verb:'FIND',kind:'PLACE',term:category};const areaCity=rest.replace(/^(?:in|في) /u,'').match(/^(.+?)(?:,? (?:in|في))? (berlin|برلين)$/u);const area=areaCity&&lookup(AREAS,areaCity[1]);if(area)return {family:'place',category,place:{value:'Berlin',dimension:'LOCATION'},area,verb:'FIND',kind:'PLACE',term:category};const place=location(rest);if(place)return {family:'place',category,place,verb:'FIND',kind:'PLACE',term:category};}

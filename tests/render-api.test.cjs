@@ -16,8 +16,8 @@ test('health check needs no origin, invokes no brain and leaves CORS/search limi
  assert.equal(calls,0);assert.equal((await ask(base,'Buy a car')).status,200);assert.equal(calls,1);
  assert.equal((await fetch(base+'/api/ask')).status,403);assert.equal((await ask(base,'Buy a car')).status,429);
 });
-test('default-disabled Ollama fails safely and a subsequent Fast Path request still works',async t=>{
- const base=await open(t);const unavailable=await ask(base,'I need an unusual quiet workshop with a kiln');assert.equal(unavailable.status,503);assert.equal(unavailable.body.error.code,'temporarily_unavailable');
+test('default-disabled Ollama reports a capability limit and a subsequent Fast Path request works',async t=>{
+ const base=await open(t);const unavailable=await ask(base,'I need an unusual quiet workshop with a kiln');assert.equal(unavailable.status,200);assert.equal(unavailable.body.status,'unsupported');assert.equal(unavailable.body.error,null);assert.equal(unavailable.body.canRefine,false);assert.deepEqual(unavailable.body.results,[]);
  const fast=await ask(base,'قهوة');assert.equal(fast.status,200);assert.equal(fast.body.status,'clarification');
 });
 test('enabled but unreachable Ollama fails safely without poisoning the next request',async t=>{
@@ -29,4 +29,17 @@ test('all three Fast Path provider families route through the existing brain wit
  const routed=[];let modelCalls=0;const run=createPublicSearch({ollamaEnabled:true,modelFetch:async()=>{modelCalls++;throw Error('MODEL_MUST_NOT_RUN');},providerSearch:async r=>{routed.push(r.providerId);return {results:[]};}});
  for(const input of ['Café in Berlin','How do I get from Alexanderplatz to Potsdam?','Find public information about bicycle infrastructure in Berlin.'])await run(input,auth(input));
  assert.equal(modelCalls,0);for(const provider of ['photon-places','bvg-transport-v6','govdata-catalog'])assert(routed.includes(provider),provider);
+});
+
+test('articles do not require a model and unsupported conditions are never discarded',async()=>{
+ const {parsePublicIntent}=require('../server/public-intent-fast-path.cjs');
+ for(const text of ['A cafe in Berlin','An cafe in Berlin','Eine Bibliothek in Berlin','Find me a cafe in Berlin'])assert(parsePublicIntent(text),text);
+ for(const text of ['A quiet cafe in Berlin','A cafe in Berlin with wifi','Quiet coworking space in Berlin','A cafe near my home'])assert.equal(parsePublicIntent(text),null,text);
+ let providerCalls=0;
+ const run=createPublicSearch({providerSearch:async()=>{providerCalls++;return {results:[]};}});
+ for(const input of ['A quiet cafe in Berlin','Quiet coworking space in Berlin']){
+  const report=await run(input,auth(input));assert.equal(report.code,'PUBLIC_LANGUAGE_UNAVAILABLE');
+ }
+ assert.equal(providerCalls,0);
+ const input='A cafe in Berlin';await run(input,auth(input));assert(providerCalls>0);
 });

@@ -2,6 +2,7 @@
 const {createHash}=require('node:crypto');
 const {resultView}=require('./beta-results.cjs');
 const COPY={
+ languageUnavailable:['This request is not supported yet. Try a simple public search such as “Café in Berlin” or “How do I get from Alexanderplatz to Potsdam?”. Additional conditions cannot yet be verified.','Diese Anfrage wird noch nicht unterstützt. Versuche eine einfache öffentliche Suche wie „Café in Berlin“. Zusätzliche Bedingungen können noch nicht überprüft werden.','هذا الطلب غير مدعوم بعد. جرّب بحثًا عامًا بسيطًا مثل «مقهى في برلين». لا يمكن التحقق من الشروط الإضافية حاليًا.'],
  results:['Here are source results for your need. Coverage is limited; review each source.','Hier sind Quellergebnisse zu deinem Anliegen. Die Abdeckung ist begrenzt; prüfe die Quellen.','هذه نتائج المصادر لحاجتك. التغطية محدودة؛ راجع كل مصدر.'],
  clarification:['Please clarify what you need or where to search.','Bitte präzisiere dein Anliegen oder den Suchort.','يرجى توضيح حاجتك أو مكان البحث.'],
  whereSearch:['In which city or area should I look?','In welcher Stadt oder Gegend soll ich suchen?','في أي مدينة أو منطقة تريد البحث؟'],
@@ -38,6 +39,7 @@ function envelope({conversationId=null,status='error',locale='en',key=status,res
 function errorResponse(code,locale='en',conversationId=null){return envelope({locale,conversationId,key:code,error:{code}});}
 function httpsUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}}
 function publicResponse(report,{conversationId,locale,canRefine,expiresAt}){
+ if(report.code==='PUBLIC_LANGUAGE_UNAVAILABLE')return envelope({conversationId,locale,expiresAt,status:'unsupported',key:'languageUnavailable'});
  if(report.code==='LOCAL_EXTRACTION_FAILED'||['extraction','semantic'].includes(report.stage)&&['EXTRACTOR_FAILED','ASSESSOR_FAILED','TIMEOUT','CANCELLED'].includes(report.code))return errorResponse('temporarily_unavailable',locale,conversationId);
  const view=resultView(report);
  // Only the existing evidence-filtered projection is eligible. Demo modules are never imported.
