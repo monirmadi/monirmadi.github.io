@@ -32,9 +32,11 @@ test('all three Fast Path provider families route through the existing brain wit
 });
 test('OpenAI adapter converts structured chat output to the runtime contract',async()=>{
  let captured;
- const adapter=createOpenAIModelFetch({apiKey:'sk-test',fetchImpl:async(url,init)=>{captured={url,init};return new Response(JSON.stringify({choices:[{message:{content:'{"ok":true}'}}]}),{status:200});}});
- const response=await adapter('http://127.0.0.1:11434/api/generate',{body:JSON.stringify({model:'gpt-4.1-mini',system:'system',prompt:'prompt',options:{num_predict:64}})});
+ const adapter=createOpenAIModelFetch({apiKey:'sk-test',fetchImpl:async(url,init)=>{captured={url,init};return new Response(JSON.stringify({choices:[{finish_reason:'stop',message:{content:'{"ok":true}'}}]}),{status:200});}});
+ const response=await adapter('http://127.0.0.1:11434/api/generate',{body:JSON.stringify({model:'gpt-4.1-mini',system:'system',prompt:'prompt',format:{type:'object',properties:{ok:{type:'boolean'}},required:['ok'],additionalProperties:false},options:{num_predict:64}})});
  assert.equal(response.status,200);assert.deepEqual(JSON.parse(JSON.parse(await response.text()).response),{ok:true});
+ const sent=JSON.parse(captured.init.body);
+ assert.deepEqual(sent.response_format,{type:'json_schema',json_schema:{name:'psaksi_search_stage',strict:true,schema:{type:'object',properties:{ok:{type:'boolean'}},required:['ok'],additionalProperties:false}}});
  assert.equal(captured.url,'https://api.openai.com/v1/chat/completions');assert.equal(captured.init.headers.Authorization,'Bearer sk-test');
 });
 
@@ -49,4 +51,11 @@ test('articles do not require a model and unsupported conditions are never disca
  }
  assert.equal(providerCalls,0);
  const input='A cafe in Berlin';await run(input,auth(input));assert(providerCalls>0);
+});
+
+test('OpenAI adapter rejects truncated and refused completions',async()=>{
+ for(const choice of [{finish_reason:'length',message:{content:'{}'}},{finish_reason:'stop',message:{refusal:'Unable',content:'{}'}}]){
+  const adapter=createOpenAIModelFetch({apiKey:'sk-test',fetchImpl:async()=>new Response(JSON.stringify({choices:[choice]}))});
+  assert.equal((await adapter('',{body:JSON.stringify({format:{type:'object'}})})).status,502);
+ }
 });

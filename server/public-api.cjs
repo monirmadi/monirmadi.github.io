@@ -37,11 +37,12 @@ function createOpenAIModelFetch({apiKey,model='gpt-4.1-mini',fetchImpl=globalThi
  if(typeof apiKey!=='string'||!apiKey.startsWith('sk-'))throw Error('OPENAI_API_KEY_MISSING');
  return async(_url,init={})=>{
   const request=JSON.parse(init.body);
-  const response=await fetchImpl('https://api.openai.com/v1/chat/completions',{method:'POST',redirect:'error',signal:init.signal,headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},body:JSON.stringify({model,messages:[{role:'system',content:request.system},{role:'user',content:request.prompt}],temperature:0,max_tokens:request.options?.num_predict??768,response_format:{type:'json_object'}})});
+  const response=await fetchImpl('https://api.openai.com/v1/chat/completions',{method:'POST',redirect:'error',signal:init.signal,headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},body:JSON.stringify({model,messages:[{role:'system',content:request.system},{role:'user',content:request.prompt}],temperature:0,max_tokens:request.options?.num_predict??768,response_format:{type:'json_schema',json_schema:{name:'psaksi_search_stage',strict:true,schema:request.format}}})});
   if(!response.ok)return response;
   const payload=await response.json();
-  const content=payload.choices?.[0]?.message?.content;
-  if(typeof content!=='string')return new Response('',{status:502});
+  const choice=payload.choices?.[0];
+  const content=choice?.message?.content;
+  if(choice?.finish_reason!=='stop'||choice?.message?.refusal||typeof content!=='string')return new Response('',{status:502});
   return new Response(JSON.stringify({done:true,done_reason:'stop',model,created_at:new Date().toISOString(),response:content}),{status:200,headers:{'Content-Type':'application/json'}});
  };
 }
