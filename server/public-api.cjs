@@ -6,7 +6,7 @@ const {inputFingerprint}=require('./universal-real-search.cjs');
 const {createBetaSearch}=require('./beta-search.cjs');
 const {createLocalLanguageRuntime}=require('./local-language-runtime.cjs');
 const {publicResponse,errorResponse}=require('./public-ask-contract.cjs');
-const DEFAULT_ORIGINS=['https://preview.psaksi.de','https://relaxing-bird.10web.cloud'];
+const DEFAULT_ORIGINS=['https://preview.psaksi.de','https://relaxing-bird.10web.cloud','https://psaksi.de','https://www.psaksi.de'];
 const ID=/^[a-f0-9]{64}$/;
 const fail=(code,httpStatus)=>Object.assign(new Error(code),{code,httpStatus});
 function validateOrigins(values){

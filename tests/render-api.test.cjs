@@ -59,3 +59,13 @@ test('OpenAI adapter rejects truncated and refused completions',async()=>{
   assert.equal((await adapter('',{body:JSON.stringify({format:{type:'object'}})})).status,502);
  }
 });
+
+test('PSAKSI primary domains allow public preflight while unrelated origins remain blocked',async t=>{
+ const base=await open(t);
+ for(const origin of ['https://psaksi.de','https://www.psaksi.de']){
+  const r=await fetch(base+'/api/ask',{method:'OPTIONS',headers:{Origin:origin,'Access-Control-Request-Method':'POST','Access-Control-Request-Headers':'content-type'}});
+  assert.equal(r.status,204);assert.equal(r.headers.get('access-control-allow-origin'),origin);
+  assert.equal(r.headers.get('access-control-allow-credentials'),null);
+ }
+ const r=await fetch(base+'/api/ask',{method:'OPTIONS',headers:{Origin:'https://not-psaksi.example'}});assert.equal(r.status,403);
+});
