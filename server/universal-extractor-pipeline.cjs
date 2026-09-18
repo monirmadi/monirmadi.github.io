@@ -58,7 +58,7 @@ async function extractUniversalIntent(sourceInput, extractor, options = {}) {
     return {
       status: 'rejected',
       stage: 'extractor-adapter',
-      code: err.message === 'TIMEOUT' ? 'TIMEOUT' : (err.message === 'CANCELLED' ? 'CANCELLED' : 'EXTRACTOR_FAILED'),
+      code: err.message === 'LOCAL_INTERPRETATION_UNRESOLVED' ? 'INTERPRETATION_UNRESOLVED' : err.message === 'TIMEOUT' ? 'TIMEOUT' : (err.message === 'CANCELLED' ? 'CANCELLED' : 'EXTRACTOR_FAILED'),
       worldTruth: 'UNVERIFIED',
       actionAuthority: 'NONE'
     };

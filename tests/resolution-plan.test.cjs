@@ -48,3 +48,15 @@ test('model diagnostics contain operational codes only, never query or raw respo
  assert.deepEqual(runtime.failures,[{stage:'extraction',code:'LOCAL_MODEL_HTTP_ERROR'}]);
  assert(!JSON.stringify(runtime.failures).includes('private'));
 });
+test('explicit unresolved meaning asks for clarification instead of reporting an outage',async()=>{
+ const {createLocalLanguageRuntime}=require('../server/local-language-runtime.cjs');
+ const input='uncertain need';const f=value=>({value,quote:input});let budget;
+ const runtime=createLocalLanguageRuntime({model:'gpt-4.1-mini',fetchImpl:async(url,init)=>{
+  budget=JSON.parse(init.body).options.num_predict;
+  return new Response(JSON.stringify({done:true,done_reason:'stop',model:'gpt-4.1-mini',created_at:new Date().toISOString(),response:JSON.stringify({action:f('FIND'),entity:{kind:f('PLACE'),description:f('place')},constraints:[],roles:[],domains:[],components:[],unresolved:['AMBIGUOUS_MEANING']})}));
+ }});
+ const run=createUniversalRealSearch({runtime});
+ const report=await run(input,{mode:'EXPLICIT_READ_ONLY',inputSha256:inputFingerprint(input),publicSearchDisclosure:true});
+ assert.equal(report.code,'INTERPRETATION_UNRESOLVED');assert.equal(budget,3072);
+ const response=publicResponse(report,{locale:'en'});assert.equal(response.status,'clarification');assert.equal(response.error,null);
+});
