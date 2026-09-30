@@ -13,6 +13,7 @@ function normalizeJourneys(data,provenance,request,freshness){
    if(!Number.isFinite(dep)||!Number.isFinite(arr)||arr<dep||dep<previous||typeof l.origin?.id!=='string'||typeof l.destination?.id!=='string')return fail('INCONSISTENT_JOURNEY');previous=arr;
    legs.push({originId:l.origin.id,originName:l.origin.name??null,destinationId:l.destination.id,destinationName:l.destination.name??null,departure:l.departure??l.plannedDeparture,arrival:l.arrival??l.plannedArrival,line:l.line?.name??null,walking:l.walking===true,cancelled:l.cancelled===true});
   }
+  for(let i=1;i<legs.length;i++)if(legs[i-1].destinationId!==legs[i].originId)return fail('DISCONNECTED_JOURNEY');
   const first=legs[0],last=legs.at(-1),departure=parse(first.departure);
   if(departure<Date.parse(provenance.requestedAt)-120000||departure>Date.parse(provenance.retrievedAt)+86400000){freshness.status='UNVERIFIED';freshness.issues.push('JOURNEY_OUTSIDE_CURRENT_SNAPSHOT_WINDOW');}
   results.push(sourceKnowledge({id:'journey-'+index,entityType:'TRANSPORT_SERVICE',originId:first.originId,destinationId:last.destinationId,departure:first.departure,arrival:last.arrival,durationSeconds:(parse(last.arrival)-departure)/1000,legs,cancelled:legs.some(l=>l.cancelled),requestedEndpoints:{fromId:request.fromId,toId:request.toId},timeBasis:'API_DEFAULT_CURRENT_SNAPSHOT_NOT_USER_TIME'},{...provenance,jsonPointer:`/journeys/${index}`,sourceUpdatedAt:freshness.sourceUpdatedAt}));

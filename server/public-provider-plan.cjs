@@ -17,6 +17,7 @@ function buildPublicPlan(r){
  if(r.anchor!==undefined){const a=r.anchor;if(!a||Object.keys(a).sort().join('|')!=='latitude|longitude'||![a.latitude,a.longitude].every(Number.isFinite)||Math.abs(a.latitude)>90||Math.abs(a.longitude)>180||[a.latitude,a.longitude].some(v=>Math.abs(v*100-Math.round(v*100))>1e-7))return fail('APPROXIMATE_PUBLIC_ANCHOR_REQUIRED');}
  if(r.queryMode!==undefined&&(r.providerId!=='govdata-catalog'||r.queryMode!=='all-terms'))return fail('INVALID_QUERY_MODE');
  const query=r.query.trim();
+ if(!/[\p{L}\p{N}]/u.test(query))return fail('INVALID_PUBLIC_QUERY');
  const path=p.id==='photon-places'?'/api/':'/ckan/api/3/action/package_search';
  const params=p.id==='photon-places'?{q:query,limit:String(n),lang:'de',countrycode:'DE'}:{q:'"'+query.replace(/["\\]/g,' ')+'"',rows:String(n),start:'0'};
  if(r.queryMode==='all-terms')params.q=query.match(/[\p{L}\p{N}]+/gu).map(term=>'\"'+term+'\"').join(' AND ');
