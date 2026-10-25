@@ -38,7 +38,16 @@ function createOpenAIModelFetch({apiKey,model='gpt-4.1-mini',fetchImpl=globalThi
  return async(_url,init={})=>{
   const request=JSON.parse(init.body);
   const response=await fetchImpl('https://api.openai.com/v1/chat/completions',{method:'POST',redirect:'error',signal:init.signal,headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},body:JSON.stringify({model,messages:[{role:'system',content:request.system},{role:'user',content:request.prompt}],temperature:0,max_tokens:request.options?.num_predict??768,response_format:{type:'json_schema',json_schema:{name:'psaksi_search_stage',strict:true,schema:request.format}}})});
-  if(!response.ok)return response;
+  if(!response.ok){
+   // Never log provider messages, headers, credentials or the user's input.
+   // Status and a closed operational code distinguish quota/auth/schema faults.
+   let code='UNKNOWN';
+   try{const payload=await response.clone().json();const candidate=payload?.error?.code;
+    if(['insufficient_quota','invalid_api_key','rate_limit_exceeded','model_not_found','invalid_json_schema','invalid_parameter','unsupported_parameter'].includes(candidate))code=candidate;
+   }catch{}
+   console.warn('PSAKSI_HOSTED_MODEL_HTTP',JSON.stringify({status:response.status,code}));
+   return response;
+  }
   const payload=await response.json();
   const choice=payload.choices?.[0];
   const content=choice?.message?.content;
