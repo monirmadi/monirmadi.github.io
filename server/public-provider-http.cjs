@@ -18,7 +18,8 @@ function clockCheck(start,end,httpDate,httpAge=null){
  return {status:issues.length?'UNVERIFIED':'CONSISTENT',issues,basis:hasAge?'HTTP_DATE_AND_AGE':'HTTP_DATE',responseAgeMs:ageValid?ageMs:null,...(issues.length?{diagnostic:{localStartedAtMs:Number.isFinite(start)?start:null,localReceivedAtMs:Number.isFinite(end)?end:null,httpDate:typeof httpDate==='string'?httpDate:null,httpDateMs:Number.isFinite(http)?http:null,httpOffsetFromStartMs:Number.isFinite(http)&&Number.isFinite(start)?http-start:null,httpOffsetFromEndMs:Number.isFinite(http)&&Number.isFinite(end)?http-end:null,httpFailure:!ageValid?'INVALID_HTTP_AGE':!Number.isFinite(http)?'MISSING_OR_INVALID_DATE':effective<start-120000?'HTTP_DATE_TOO_OLD':effective>end+30000?'HTTP_DATE_IN_FUTURE':null}}:{})};
 }
 // A shared transport per process. Production multi-worker use requires a shared limiter.
-function createPublicTransport({fetchImpl=globalThis.fetch,now=Date.now,monotonic=()=>performance.now(),timeoutMs=15000}={}){
+function createPublicTransport({fetchImpl=globalThis.fetch,now=Date.now,monotonic=()=>performance.now(),timeoutMs=15000,requestBudgetWindowMs=null}={}){
+ if(requestBudgetWindowMs!==null&&(!Number.isFinite(requestBudgetWindowMs)||requestBudgetWindowMs<60000||requestBudgetWindowMs>86400000))throw new RangeError('Invalid request budget window');
  const state=new Map();
  return async function read(request){
   const plan=buildPublicPlan(request),fail=(code,extra={})=>({...BOUNDARY,status:'failed',code,...extra});
@@ -27,10 +28,13 @@ function createPublicTransport({fetchImpl=globalThis.fetch,now=Date.now,monotoni
   if(!Number.isFinite(tick)||!Number.isFinite(startedAt))return fail('INVALID_CLOCK');
   const url=new URL(plan.path,provider.baseUrl);for(const [key,value] of Object.entries(plan.params))url.searchParams.set(key,value);
   const key=url.toString();
-  let s=state.get(provider.id);if(!s){s={next:-Infinity,count:0,cache:new Map()};state.set(provider.id,s);}
+  let s=state.get(provider.id);if(!s){s={next:-Infinity,count:0,budgetStartedAt:tick,cache:new Map()};state.set(provider.id,s);}
   const cached=s.cache.get(key);
   if(cached&&tick>=cached.at&&tick-cached.at<provider.usage.cacheTtlMs)return {...structuredClone(cached.result),fromCache:true};
   if(s.inFlight||tick<s.next)return fail('RATE_LIMITED',{retryAfterMs:Math.max(0,s.next-tick)});
+  // Hosted processes live for weeks. Renew the same conservative budget only
+  // after a full monotonic window; never reset pacing or upstream Retry-After.
+  if(requestBudgetWindowMs!==null&&tick-s.budgetStartedAt>=requestBudgetWindowMs){s.count=0;s.budgetStartedAt=tick;}
   if(s.count>=provider.usage.maxRequestsPerProcess)return fail('SESSION_REQUEST_LIMIT');
   s.inFlight=true;s.count++;s.next=tick+provider.usage.minimumIntervalMs;
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
@@ -55,5 +59,7 @@ function createPublicTransport({fetchImpl=globalThis.fetch,now=Date.now,monotoni
   finally{clearTimeout(timer);s.inFlight=false;}
  };
 }
-const readPublic=createPublicTransport();
+// At most 30 uncached requests/provider/hour, with existing spacing/backoff.
+// Research callers retain their original lifetime cap unless explicitly set.
+const readPublic=createPublicTransport({requestBudgetWindowMs:3600000});
 module.exports={createPublicTransport,readPublic,requestFingerprint,clockCheck};
