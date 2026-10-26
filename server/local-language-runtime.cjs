@@ -21,9 +21,13 @@ function assessorInput(payload){
 function extractionSchema(text){
  // Unicode word segmentation includes scripts without whitespace. Evidence is
  // source-derived (never a vocabulary); full context always remains available.
- const spans=new Set([text]);
+ const spans=new Set();
  const whitespace=[...text.matchAll(/\S+/gu)];
- const add=q=>{if(q&&spans.size<32&&text.indexOf(q,text.indexOf(q)+1)<0)spans.add(q);};
+ // Hosted structured-output enum literals reject control characters. Keep
+ // verbatim, unique spans within turns; never normalize the source/evidence.
+ const add=q=>{if(q&&!/[\u0000-\u001f\u007f]/u.test(q)&&spans.size<32&&text.indexOf(q,text.indexOf(q)+1)<0)spans.add(q);};
+ add(text);
+ for(const line of text.split(/[\r\n\t]/u))add(line);
  if(whitespace.length>1&&whitespace.length<=16){
   // Preserve established short-query evidence choices for compatibility.
   for(let width=1;width<=whitespace.length&&spans.size<32;width++)for(let i=0;i+width<=whitespace.length&&spans.size<32;i++){
@@ -41,7 +45,9 @@ function extractionSchema(text){
   }
  }
  const result=structuredClone(schema);
- const bind=properties=>{for(const f of [properties.action,properties.entity.properties.kind,properties.entity.properties.description,properties.constraints.items.properties.value,properties.roles.items,properties.domains.items])f.properties.quote=choice([...spans]);};
+ // If every within-turn span repeats, leave sampling open rather than sending
+ // an invalid empty enum. compileExtraction still requires exact unique quotes.
+ const bind=properties=>{for(const f of [properties.action,properties.entity.properties.kind,properties.entity.properties.description,properties.constraints.items.properties.value,properties.roles.items,properties.domains.items])f.properties.quote=spans.size?choice([...spans]):{type:'string'};};
  bind(result.properties);bind(result.properties.components.items.properties);
  return result;
 }
@@ -116,7 +122,7 @@ function createLocalLanguageRuntime({model='qwen2.5-coder:7b-instruct',fetchImpl
  }
  const extractor={id:'ollama-universal-local',version:'1',async extract(source,options={}){
   const required=options.requiredDimensions;
-  const instruction=COMPACT_EXTRACTION+contextPolicy+(required?.length?' Re-extract from the original source: the prior proposal omitted required relation/type fields listed in requiredDimensions. Entity description cannot substitute for an ORIGIN/DESTINATION relationship. For places, CATEGORY is the requested type and description contains only the target name/type, not proximity wording. Include each required dimension only if supported by the original text; otherwise return unresolved. Never infer a missing endpoint.':'');
+  const instruction=COMPACT_EXTRACTION+' Interpret ordinary spelling/grammar mistakes and colloquial wording by meaning when unambiguous, but quotes must retain the exact original spelling. Never silently change a city, budget or negation; ask for clarification when uncertain. Accommodation sought to live in (an apartment, room, flat or home) has kind HOUSING, never the generic PLACE. Use domain HOUSING for that request. PLACE means a public/map destination, not any physical location. A request for housing information uses HOUSING_INFORMATION instead. Preserve this distinction even when no housing provider is connected.'+contextPolicy+(required?.length?' Re-extract from the original source: the prior proposal omitted required relation/type fields listed in requiredDimensions. Entity description cannot substitute for an ORIGIN/DESTINATION relationship. For places, CATEGORY is the requested type and description contains only the target name/type, not proximity wording. Include each required dimension only if supported by the original text; otherwise return unresolved. Never infer a missing endpoint.':'');
   const output=await generate(instruction,{originalText:source.originalText,...(turnRanges.length>1?{userTurnRanges:turnRanges}:{}),...(required?.length?{requiredDimensions:required}:{})},extractionSchema(source.originalText),options);
   if(output.unresolved.length){failures.push({stage:'extraction',code:'INTERPRETATION_UNRESOLVED',reasons:output.unresolved});throw Error('LOCAL_INTERPRETATION_UNRESOLVED');}
   return compileExtraction(source,output,extractor);
@@ -124,7 +130,7 @@ function createLocalLanguageRuntime({model='qwen2.5-coder:7b-instruct',fetchImpl
  const assessor={id:'ollama-semantic-local',version:'1',async assess(payload,{signal}={}){
   const decisionSchema=assessorSchema(payload);
   const traceStart=traces.length;
-  const out=await generate(COMPACT_ASSESSMENT+contextPolicy,{...compactAssessorInput(payload),...(turnRanges.length>1?{userTurnRanges:turnRanges}:{})},decisionSchema,{signal,timeout:Math.min(119000,timeoutMs),stage:'semantic-assessor'});
+  const out=await generate(COMPACT_ASSESSMENT+' Check target specificity: accommodation sought to live in must be HOUSING/ROOM/APARTMENT, not PLACE. Reject a generic place classification for an apartment/room search, even though housing is physically a place. Housing public-information requests are distinct from actual offers. Ordinary unambiguous spelling/grammar corrections in normalized values are allowed; quoted evidence must remain verbatim.'+contextPolicy,{...compactAssessorInput(payload),...(turnRanges.length>1?{userTurnRanges:turnRanges}:{})},decisionSchema,{signal,timeout:Math.min(119000,timeoutMs),stage:'semantic-assessor'});
   const reasons={support:'evidence-support',reject:'contradicted',abstain:'insufficient-evidence',ambiguous:'multiple-readings',conflict:'inconsistent-claims'};
   const normalized={binding:payload.binding,claims:out.decisions.map(d=>({claimId:d.claimId,decision:d.decision,reasons:[reasons[d.decision]],evidenceIndexes:payload.claims.find(c=>c.id===d.claimId)?.evidenceIndexes||[]})),graph:{decision:out.coverage,reasons:[out.coverage==='support'?'evidence-support':out.coverage==='conflict'?'inconsistent-claims':'insufficient-evidence'],evidenceIndexes:payload.evidence.map(e=>e.index),claimIds:payload.claims.map(c=>c.id)}};
   if(diagnostics)traces[traceStart].normalized=structuredClone(normalized);

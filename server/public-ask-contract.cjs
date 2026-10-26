@@ -2,6 +2,7 @@
 const {createHash}=require('node:crypto');
 const {resultView}=require('./beta-results.cjs');
 const COPY={
+ housingPending:['You are looking for housing. Live apartment and room listings are not connected yet. No housing availability has been checked. You can keep your request in My Space.','Du suchst eine Wohnung oder ein Zimmer. Live-Wohnungsangebote sind noch nicht angebunden. Es wurde keine Verfügbarkeit geprüft. Du kannst dein Anliegen in My Space aufbewahren.','أنت تبحث عن سكن. عروض الشقق والغرف المباشرة غير متصلة بعد، ولم نتحقق من توفر أي سكن. يمكنك الاحتفاظ بطلبك في صفحتك.'],
  personPending:['Your need is to connect with a person. Matching with consenting participants is not available in this beta yet. You can sign in to My Space and save your request privately. Saving does not publish it, contact anyone or start monitoring.','Du möchtest eine passende Person finden. Die Vermittlung mit einwilligenden Teilnehmenden ist in dieser Beta noch nicht verfügbar. Du kannst dich in My Space anmelden und dein Anliegen privat speichern. Das veröffentlicht nichts, kontaktiert niemanden und startet keine Überwachung.','طلبك هو التواصل مع شخص مناسب. المطابقة مع أشخاص وافقوا على المشاركة غير متاحة في النسخة التجريبية بعد. يمكنك تسجيل الدخول إلى مساحتي وحفظ طلبك بشكل خاص. الحفظ لا ينشر الطلب ولا يتواصل مع أحد ولا يبدأ متابعة تلقائية.'],
  languageUnavailable:['This request is not supported yet. Try a simple public search such as “Café in Berlin” or “How do I get from Alexanderplatz to Potsdam?”. Additional conditions cannot yet be verified.','Diese Anfrage wird noch nicht unterstützt. Versuche eine einfache öffentliche Suche wie „Café in Berlin“. Zusätzliche Bedingungen können noch nicht überprüft werden.','هذا الطلب غير مدعوم بعد. جرّب بحثًا عامًا بسيطًا مثل «مقهى في برلين». لا يمكن التحقق من الشروط الإضافية حاليًا.'],
  results:['Here are source results for your need. Coverage is limited; review each source.','Hier sind Quellergebnisse zu deinem Anliegen. Die Abdeckung ist begrenzt; prüfe die Quellen.','هذه نتائج المصادر لحاجتك. التغطية محدودة؛ راجع كل مصدر.'],
@@ -47,6 +48,8 @@ function publicResponse(report,{conversationId,locale,canRefine,expiresAt}){
   message:compositeMessage(plan,locale),resolutionPlan:plan,nextAction:'open_account'
  };
  if(report.code==='PERSON_MATCHING_NOT_CONNECTED')return {...envelope({conversationId,locale,expiresAt,status:'unsupported',key:'personPending',resultType:'PERSON'}),nextAction:'open_account'};
+ if(report.code==='HOUSING_MATCHING_NOT_CONNECTED')return {...envelope({conversationId,locale,expiresAt,status:'unsupported',key:'housingPending',resultType:'HOUSING'}),nextAction:'open_account'};
+ if(report.code==='TARGET_KIND_CONFLICT')return envelope({conversationId,locale,expiresAt,canRefine,status:'clarification',key:'clarification'});
  if(report.code==='PUBLIC_LANGUAGE_UNAVAILABLE')return envelope({conversationId,locale,expiresAt,status:'unsupported',key:'languageUnavailable'});
  if(report.code==='LOCAL_EXTRACTION_FAILED'||['extraction','semantic'].includes(report.stage)&&['EXTRACTOR_FAILED','ASSESSOR_FAILED','TIMEOUT','CANCELLED'].includes(report.code))return errorResponse('temporarily_unavailable',locale,conversationId);
  const view=resultView(report);

@@ -87,7 +87,11 @@ function createUniversalRealSearch({runtime:baseRuntime=createLocalLanguageRunti
    report.REFINEMENT_ALLOWED=false;
    return finish('provider-selection','PERSON_MATCHING_NOT_CONNECTED');
   }
+  // A conflicting accommodation domain must not authorize a map lookup.
+  // Do not repair or relabel an assessed graph here: ask for clarification.
+  if(intent.entities.some(e=>e.kind?.value==='PLACE'&&intent.domains.some(d=>d.entityIds.includes(e.id)&&d.context?.value==='HOUSING')))return finish('semantic','TARGET_KIND_CONFLICT');
   if(intent.actions.length>1||intent.entities.length>1){report.NEED_RESOLUTION=require('./need-resolution.cjs').planNeedResolution(route);report.REFINEMENT_ALLOWED=true;return finish('resolution-planning','COMPOSITE_NEED_REQUIRES_COMPONENT_EVIDENCE_AND_INDEPENDENT_GATES');}
+  if(intent.entities.some(e=>['HOUSING','ROOM','APARTMENT','LIVE_HOUSING_LISTING'].includes(e.kind?.value))){report.REFINEMENT_ALLOWED=false;return finish('provider-selection','HOUSING_MATCHING_NOT_CONNECTED');}
   const selection=await timed('provider-selection',()=>selectProviders(route,{allowPartialDiscovery:true}));report.PROVIDER_SELECTION=selection;
   report.NEED_RESOLUTION=require('./need-resolution.cjs').planNeedResolution(route);
   if(!['candidate','partial-candidate'].includes(selection.status))return finish('provider-selection',selection.code);

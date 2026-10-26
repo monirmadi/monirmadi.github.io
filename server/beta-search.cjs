@@ -1,7 +1,7 @@
 'use strict';
 const {createUniversalRealSearch,inputFingerprint}=require('./universal-real-search.cjs');
 const {createPublicRuntime}=require('./public-intent-fast-path.cjs');
-const rawBetaTransport=require('./public-provider-http.cjs').createPublicTransport({timeoutMs:5000});
+const rawBetaTransport=require('./public-provider-http.cjs').createPublicTransport({timeoutMs:5000,requestBudgetWindowMs:3600000});
 const betaTransport=require('./beta-provider-pacing.cjs').withShortProviderWait(rawBetaTransport);
 function createBetaSearch(options={}){
  options={...options,search:options.search??((request,authorization,metrics)=>require('./controlled-real-search.cjs').controlledRealSearch(request,authorization,{...metrics,transport:betaTransport,timeoutMs:5000}))};
@@ -23,7 +23,7 @@ function createBetaSearch(options={}){
   const interpreted=performance.now()-start;
   const run=runtime?createUniversalRealSearch({...options,runtime,requirePrivacyReview:true,requirePlaceContext:true}):heavy;
   const report=await run(input,authorization);report.FAST_PATH={used:Boolean(runtime),rule:runtime?'CLOSED_PUBLIC_INTENT_GRAMMAR_V1':null};
-  report.REFINEMENT_ALLOWED=report.code!=='PERSON_MATCHING_NOT_CONNECTED'&&Boolean(report.ENTITIES?.length)&&!['authorization','input','privacy'].includes(report.stage);
+  report.REFINEMENT_ALLOWED=!['PERSON_MATCHING_NOT_CONNECTED','HOUSING_MATCHING_NOT_CONNECTED'].includes(report.code)&&Boolean(report.ENTITIES?.length)&&!['authorization','input','privacy'].includes(report.stage);
   if(authorization?.contextTurns?.length>1&&['extraction','semantic'].includes(report.stage)&&report.status==='blocked'){report.CONTEXT_KEEP_PRIOR=true;report.REFINEMENT_ALLOWED=true;}
   report.ORCHESTRATION={capabilities:['places','transport','public-information'],internalMatching:'REQUIRES_CONFIRMED_RECORDS_AND_SAFETY_GRANTS',chosenProvider:report.PROVIDER_SELECTED??null,heavyFallback:!runtime};
   if(runtime)report.TRUTH_CLASSIFICATION.modelAssessment='INTERPRETED';
